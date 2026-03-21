@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "462955114127",
+    "project_id": "opket-94ed8",
+    "storage_bucket": "opket-94ed8.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:462955114127:android:3db90f0e2ea9711a944afa",
+        "android_client_info": {
+          "package_name": "com.saabiqoon.tasbeeh"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDIyiys1cgyMz_x3nWJAzD5u2yErR4PFLA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
