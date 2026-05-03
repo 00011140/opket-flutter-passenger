@@ -2,11 +2,11 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:opket/components/authentication_wrapper.dart';
-import 'package:opket/cubit/auth_cubit.dart';
+import 'package:opket/feat/auth/presentation/cubit/otp_cubit.dart';
+import 'package:opket/feat/auth/presentation/auth_page.dart';
 import 'package:opket/feat/food/models/restaurant_model.dart';
 import 'package:opket/feat/food/restaurant_detail_page.dart';
-import 'package:opket/utils/show_bottom_sheet.dart';
+import 'package:opket/core/utils/show_bottom_sheet.dart';
 import 'package:shimmer/shimmer.dart';
 
 class RestaurantCard extends StatefulWidget {
@@ -57,14 +57,6 @@ class RestaurantCardState extends State<RestaurantCard>
   }
 
   void _navigate() {
-    final authState = context.read<AuthCubit>().state;
-
-    if (authState is UnAuthenticated) {
-      showAppModelBottomSheet(context, const AuthenticationWrapper());
-
-      return;
-    }
-
     FocusManager.instance.primaryFocus?.unfocus();
 
     Navigator.push(

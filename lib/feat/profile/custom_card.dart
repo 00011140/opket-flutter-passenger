@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:opket/core/spacing.dart';
+import 'package:opket/core/theme/spacing.dart';
 
 class CustomCard extends StatelessWidget {
   final Widget child;

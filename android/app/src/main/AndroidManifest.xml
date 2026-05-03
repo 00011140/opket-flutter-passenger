@@ -7,7 +7,9 @@
     <application
         android:label="OPKET"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:hardwareAccelerated="true"
+        android:usesCleartextTraffic="true">
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyD2RxtbyCXar_U_Kli2T-J0MPV6OqZ4miI"/>

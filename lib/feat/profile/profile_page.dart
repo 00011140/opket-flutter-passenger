@@ -2,18 +2,19 @@ import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:opket/components/app_container.dart';
-import 'package:opket/components/app_icon_button_rectangle.dart';
-import 'package:opket/components/authentication_wrapper.dart';
-import 'package:opket/components/loading_overlay.dart';
-import 'package:opket/components/toast_service.dart';
-import 'package:opket/core/spacing.dart';
-import 'package:opket/cubit/create_user_cubit.dart';
+import 'package:opket/core/widgets/app_container.dart';
+import 'package:opket/core/widgets/app_icon_button_rectangle.dart';
+import 'package:opket/core/widgets/loading_overlay.dart';
+import 'package:opket/core/widgets/toast_service.dart';
+import 'package:opket/core/theme/spacing.dart';
+import 'package:opket/feat/auth/presentation/auth_page.dart';
+import 'package:opket/feat/auth/presentation/cubit/otp_cubit.dart';
+import 'package:opket/feat/auth/presentation/cubit/otp_state.dart';
 import 'package:opket/feat/dashboard/widgets/turnon_notification_dialog.dart';
 import 'package:opket/feat/profile/cubit/delete_account_cubit.dart';
-import 'package:opket/services/user_storage.dart';
-import 'package:opket/utils/extensions.dart';
-import 'package:opket/utils/show_bottom_sheet.dart';
+import 'package:opket/core/services/user_storage.dart';
+import 'package:opket/core/utils/extensions.dart';
+import 'package:opket/core/utils/show_bottom_sheet.dart';
 
 import 'app_info_section.dart';
 
@@ -69,9 +70,9 @@ class _ProfilePageState extends State<ProfilePage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  BlocListener<CreateUserCubit, CreateUserState>(
+                  BlocListener<OtpCubit, OtpState>(
                     listener: (context, state) {
-                      if (state is CreateUserSuccess) {
+                      if (state.step == OtpStep.registered) {
                         setState(() {
                           phone = state.phone;
                         });
@@ -94,7 +95,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             onPressed: () {
                               showAppModelBottomSheet(
                                 context,
-                                const AuthenticationWrapper(),
+                                const AuthPage(),
                               );
                             },
                             size: AppButtonSize.extraSmall,

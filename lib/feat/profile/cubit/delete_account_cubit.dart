@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:opket/services/general_api_service.dart';
+import 'package:opket/core/services/general_api_service.dart';
 
 part 'delete_account_state.dart';
 

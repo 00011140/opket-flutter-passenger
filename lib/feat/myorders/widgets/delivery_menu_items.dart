@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:opket/components/dashed_divider.dart';
-import 'package:opket/core/spacing.dart';
+import 'package:opket/core/widgets/dashed_divider.dart';
+import 'package:opket/core/theme/spacing.dart';
 import 'package:opket/feat/myorders/models/food_order.dart';
-import 'package:opket/utils/extensions.dart';
+import 'package:opket/core/utils/extensions.dart';
 
 class DeliveryMenuItems extends StatelessWidget {
   const DeliveryMenuItems({

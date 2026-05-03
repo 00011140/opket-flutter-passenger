@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:opket/utils/extensions.dart';
+import 'package:opket/core/utils/extensions.dart';
 
 class MenuItemPrice extends StatelessWidget {
   const MenuItemPrice({super.key, required this.price});

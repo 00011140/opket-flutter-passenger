@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:opket/components/authentication_wrapper.dart';
-import 'package:opket/cubit/auth_cubit.dart';
-import 'package:opket/cubit/services_cubit.dart';
+import 'package:opket/core/widgets/toast_service.dart';
+import 'package:opket/core/cubit/connectivity_cubit.dart';
+import 'package:opket/feat/auth/presentation/cubit/auth_cubit.dart';
+import 'package:opket/feat/auth/presentation/auth_page.dart';
 import 'package:opket/feat/dashboard/widgets/dashboard_taxi_button.dart';
 import 'package:opket/feat/food/restaurants_page.dart';
-import 'package:opket/utils/show_bottom_sheet.dart';
+import 'package:opket/core/utils/show_bottom_sheet.dart';
+import 'package:opket/feat/ride_booking/presentation/index.dart';
 
 class DashboardNew extends StatefulWidget {
   const DashboardNew({super.key});
@@ -17,17 +19,14 @@ class DashboardNew extends StatefulWidget {
 
 class _DashboardNewState extends State<DashboardNew> {
   @override
-  void initState() {
-    context.read<AuthCubit>().init();
-    context.read<ServicesCubit>().init();
-
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return BlocListener<AuthCubit, AuthState>(
-      listener: _listenAuthCubit,
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<AuthCubit, AuthState>(listener: _listenAuthCubit),
+        BlocListener<ConnectivityCubit, bool>(
+          listener: _listenConnectivityCubit,
+        ),
+      ],
       child: AnnotatedRegion(
         value: const SystemUiOverlayStyle(
           statusBarColor: Colors.transparent,
@@ -39,21 +38,31 @@ class _DashboardNewState extends State<DashboardNew> {
           systemNavigationBarContrastEnforced: false,
         ),
         child: Scaffold(
-          floatingActionButton: TaxiButton(),
+          // floatingActionButton: TaxiButton(),
           floatingActionButtonLocation:
               FloatingActionButtonLocation.centerFloat,
           body: SafeArea(
-            child: Column(children: [Expanded(child: RestaurantsContent())]),
+            top: false,
+            bottom: false,
+            child: Column(children: [Expanded(child: RideBookingPage())]),
           ),
         ),
       ),
     );
   }
 
+  void _listenConnectivityCubit(BuildContext c, bool isConnected) {
+    if (!isConnected) {
+      ToastService.showPersistent("Internet aloqasi yo'q");
+    } else {
+      ToastService.hide();
+    }
+  }
+
   void _listenAuthCubit(BuildContext c, AuthState state) {
     if (state is UnAuthenticated) {
       Future.delayed(const Duration(seconds: 1), () async {
-        showAppModelBottomSheet(context, const AuthenticationWrapper());
+        showAppModelBottomSheet(context, const AuthPage());
       });
     }
   }

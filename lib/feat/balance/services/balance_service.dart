@@ -1,12 +1,13 @@
 import 'package:dio/dio.dart';
+import 'package:opket/core/di/sl.dart';
 import 'package:opket/feat/balance/models/pay_fare_model.dart';
-import 'package:opket/models/error_response.dart';
-import 'package:opket/services/api_client.dart';
-import 'package:opket/services/user_storage.dart';
+import 'package:opket/core/models/error_response.dart';
+import 'package:opket/core/services/api_client.dart';
+import 'package:opket/core/services/user_storage.dart';
 import 'balance_cache.dart';
 
 class BalanceService {
-  final api = ApiClient();
+  final api = sl<ApiClient>();
 
   Future<int> getBalance() async {
     final phone = await UserStorage().getPhone();

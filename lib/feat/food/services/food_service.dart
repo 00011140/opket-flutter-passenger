@@ -1,6 +1,6 @@
 import 'package:geolocator/geolocator.dart';
 import 'package:opket/core/admin_env.dart';
-import 'package:opket/di/sl.dart';
+import 'package:opket/core/di/sl.dart';
 import 'package:opket/feat/food/cubit/cart_state.dart';
 import 'package:opket/feat/food/models/cuisine_type_model.dart';
 import 'package:opket/feat/food/models/delivery_fee_request_body.dart';
@@ -11,8 +11,8 @@ import 'package:opket/feat/food/services/cuisine_type_cache.dart';
 import 'package:opket/feat/food/services/food_categories_cache.dart';
 import 'package:opket/feat/food/services/restaurants_cache.dart';
 import 'package:opket/feat/myorders/models/food_order.dart';
-import 'package:opket/services/api_client_new.dart';
-import 'package:opket/services/auth_storage.dart';
+import 'package:opket/core/services/api_client_new.dart';
+import 'package:opket/core/services/auth_storage.dart';
 
 class FoodService {
   final ApiClientNew client = ApiClientNew(

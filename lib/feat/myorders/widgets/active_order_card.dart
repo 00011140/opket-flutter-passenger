@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:opket/components/app_card.dart';
-import 'package:opket/components/app_container.dart';
-import 'package:opket/components/dashed_divider.dart';
-import 'package:opket/core/spacing.dart';
+import 'package:opket/core/widgets/app_card.dart';
+import 'package:opket/core/widgets/app_container.dart';
+import 'package:opket/core/widgets/dashed_divider.dart';
+import 'package:opket/core/theme/spacing.dart';
 import 'package:opket/feat/myorders/models/food_order.dart';
 import 'package:opket/feat/myorders/widgets/active_order_label.dart';
 import 'package:opket/feat/myorders/widgets/delivery_menu_items.dart';
-import 'package:opket/routes/route_names.dart';
+import 'package:opket/app/router/route_names.dart';
 
 class ActiveOrderCard extends StatelessWidget {
   const ActiveOrderCard({

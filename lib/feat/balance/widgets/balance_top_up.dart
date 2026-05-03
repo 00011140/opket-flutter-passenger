@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:opket/feat/balance/widgets/balance_info.dart';
-import 'package:opket/utils/extensions.dart';
+import 'package:opket/core/utils/extensions.dart';
 
 class BalanceTopUpContent extends StatelessWidget {
   const BalanceTopUpContent({super.key, required this.amount});

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:opket/components/app_container.dart';
-import 'package:opket/constants/app_icons.dart';
-import 'package:opket/core/spacing.dart';
+import 'package:opket/core/widgets/app_container.dart';
+import 'package:opket/core/constants/app_icons.dart';
+import 'package:opket/core/theme/spacing.dart';
 import 'package:opket/feat/food/cubit/restaurants_cubit.dart';
 import 'package:opket/feat/food/widgets/food_categories.dart';
 import 'package:opket/feat/food/widgets/restaurants.dart';
@@ -24,54 +24,46 @@ class _RestaurantsPageState extends State<RestaurantsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: const SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.dark,
-        systemNavigationBarColor: Colors.transparent,
-        systemNavigationBarDividerColor: Colors.transparent,
-        systemNavigationBarIconBrightness: Brightness.dark,
-      ),
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        extendBody: true,
-        appBar: AppBar(toolbarHeight: 0, backgroundColor: Colors.transparent),
-        body: GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTap: () {
-            FocusManager.instance.primaryFocus?.unfocus();
-          },
-          child: Align(
-            alignment: Alignment.bottomCenter,
-            child: SafeArea(
-              bottom: false,
-              child: Container(
-                clipBehavior: Clip.hardEdge,
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-                ),
-                child: Column(
-                  children: [
-                    AppContainer(
-                      top: true,
-                      bottom: true,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(child: RestaurantsSearchBar()),
-                          IconButton(
-                            icon: const Icon(Icons.close),
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-                    Expanded(child: RestaurantsContent()),
-                  ],
-                ),
+    return Scaffold(
+      // backgroundColor: Colors.transparent,
+      extendBody: true,
+      appBar: AppBar(title: Text("Qulay Taom")),
+      // appBar: AppBar(toolbarHeight: 0, backgroundColor: Colors.transparent),
+      body: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () {
+          FocusManager.instance.primaryFocus?.unfocus();
+        },
+        child: Align(
+          alignment: Alignment.bottomCenter,
+          child: SafeArea(
+            bottom: false,
+            child: Container(
+              clipBehavior: Clip.hardEdge,
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+              ),
+              child: Column(
+                children: [
+                  // AppContainer(
+                  //   top: true,
+                  //   bottom: true,
+                  //   child: Row(
+                  //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  //     children: [
+                  //       Expanded(child: RestaurantsSearchBar()),
+                  //       IconButton(
+                  //         icon: const Icon(Icons.close),
+                  //         onPressed: () {
+                  //           Navigator.pop(context);
+                  //         },
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ),
+                  Expanded(child: RestaurantsContent()),
+                ],
               ),
             ),
           ),
@@ -94,8 +86,8 @@ class RestaurantsContent extends StatelessWidget {
       slivers: [
         const SliverToBoxAdapter(child: ActiveOrdersCarousel()),
         const SliverToBoxAdapter(child: SizedBox(height: AppSpacing.md)),
-        const SliverToBoxAdapter(child: RestaurantsSearchBar()),
 
+        const SliverToBoxAdapter(child: RestaurantsSearchBar()),
         const SliverToBoxAdapter(child: SizedBox(height: AppSpacing.md)),
         SliverToBoxAdapter(
           child: SizedBox(

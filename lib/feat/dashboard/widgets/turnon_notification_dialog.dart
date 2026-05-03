@@ -1,8 +1,8 @@
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
-import 'package:opket/components/app_card.dart';
-import 'package:opket/components/app_icon_button_rectangle.dart';
-import 'package:opket/core/spacing.dart';
+import 'package:opket/core/widgets/app_card.dart';
+import 'package:opket/core/widgets/app_icon_button_rectangle.dart';
+import 'package:opket/core/theme/spacing.dart';
 
 class TurnonNotificationDialog extends StatefulWidget {
   const TurnonNotificationDialog({super.key, this.description});

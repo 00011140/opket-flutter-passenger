@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:opket/constants/app_icons.dart';
+import 'package:opket/core/constants/app_icons.dart';
+import 'package:opket/core/constants/app_icons_v3.dart';
 
 class RecenterButton extends StatelessWidget {
   final VoidCallback onTap;
@@ -25,7 +26,7 @@ class RecenterButton extends StatelessWidget {
           ],
         ),
         child: Center(
-          child: Icon(AppIcons.myLocation, color: Colors.black87, size: 26),
+          child: Icon(AppIconsV3.navigation, color: Colors.black87, size: 20),
         ),
       ),
     );

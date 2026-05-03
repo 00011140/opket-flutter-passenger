@@ -1,4 +1,6 @@
 import 'package:opket/core/admin_env.dart';
+import 'package:opket/core/di/sl.dart';
+import 'package:opket/core/services/auth_storage.dart';
 import 'package:opket/feat/food/cubit/menu_items_cubit.dart';
 import 'package:opket/feat/food/models/category_model.dart';
 import 'package:opket/feat/food/models/menu_item_model.dart';
@@ -6,10 +8,13 @@ import 'package:opket/feat/food/models/restaurant_model.dart';
 import 'package:opket/feat/food/services/menu_item_cache.dart';
 import 'package:opket/feat/food/services/restaurant_categories_cache.dart';
 import 'package:opket/feat/food/services/restaurants_cache.dart';
-import 'package:opket/services/api_client.dart';
+import 'package:opket/core/services/api_client.dart';
 
 class RestaurantService {
-  final ApiClient client = ApiClient(baseUrl: AdminEnv.baseUrl);
+  final ApiClient client = ApiClient(
+    baseUrl: AdminEnv.baseUrl,
+    tokenStorage: sl<AuthStorage>(),
+  );
 
   Future<List<CategoryModel>> getCategories(String restaurantId) async {
     try {

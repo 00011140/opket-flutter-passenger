@@ -1,0 +1,18 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:opket/core/theme/typography.dart';
+
+final ThemeData appLightTheme = ThemeData(
+  brightness: Brightness.light,
+  scaffoldBackgroundColor: Colors.white,
+  appBarTheme: AppBarTheme(
+    backgroundColor: Colors.white,
+    systemOverlayStyle: SystemUiOverlayStyle(
+      systemStatusBarContrastEnforced: false,
+      systemNavigationBarColor: Colors.transparent,
+    ),
+  ),
+  textTheme: AppTypography.textTheme,
+  highlightColor: Colors.transparent,
+  splashColor: const Color.fromARGB(20, 0, 0, 0),
+);

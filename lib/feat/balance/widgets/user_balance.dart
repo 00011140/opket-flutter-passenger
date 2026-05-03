@@ -1,14 +1,15 @@
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:opket/components/shimmer_loader.dart';
-import 'package:opket/constants/app_icons.dart';
-import 'package:opket/core/spacing.dart';
+import 'package:opket/core/widgets/shimmer_loader.dart';
+import 'package:opket/core/constants/app_icons.dart';
+import 'package:opket/core/theme/spacing.dart';
 import 'package:opket/feat/balance/cubit/balance_cubit.dart';
 import 'package:opket/feat/balance/models/pay_fare_model.dart';
 import 'package:opket/feat/balance/widgets/balance_deduction_bottom_sheet_content.dart';
 import 'package:opket/feat/balance/widgets/balance_top_up.dart';
-import 'package:opket/services/audio_service.dart';
-import 'package:opket/utils/extensions.dart';
+import 'package:opket/core/services/audio_service.dart';
+import 'package:opket/core/utils/extensions.dart';
 
 class UserBalance extends StatefulWidget {
   const UserBalance({super.key});

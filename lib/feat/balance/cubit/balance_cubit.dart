@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:opket/feat/balance/models/pay_fare_model.dart';
 import 'package:opket/feat/balance/services/balance_service.dart';
-import 'package:opket/services/socket_service.dart';
+import 'package:opket/core/services/socket_service.dart';
 
 part 'balance_state.dart';
 

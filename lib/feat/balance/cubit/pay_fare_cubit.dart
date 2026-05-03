@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:opket/feat/balance/models/pay_fare_model.dart';
 import 'package:opket/feat/balance/services/balance_service.dart';
-import 'package:opket/models/error_response.dart';
+import 'package:opket/core/models/error_response.dart';
 
 part 'pay_fare_state.dart';
 

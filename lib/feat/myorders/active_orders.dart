@@ -6,7 +6,7 @@ import 'package:opket/feat/myorders/cubit/active_orders_cubit.dart';
 import 'package:opket/feat/myorders/cubit/get_active_orders_cubit.dart';
 import 'package:opket/feat/myorders/models/food_order.dart';
 import 'package:opket/feat/myorders/widgets/active_order_card.dart';
-import 'package:opket/services/fcm_service.dart';
+import 'package:opket/core/services/fcm_service.dart';
 
 class ActiveOrders extends StatefulWidget {
   const ActiveOrders({super.key});

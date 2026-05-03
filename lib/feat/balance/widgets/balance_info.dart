@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:opket/components/app_button_rectangle.dart';
+import 'package:opket/core/widgets/app_button_rectangle.dart';
 
 enum BalanceInfoType { success, error }
 

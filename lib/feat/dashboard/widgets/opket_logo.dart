@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:opket/core/spacing.dart';
+import 'package:opket/core/theme/spacing.dart';
 
 class OpketLogo extends StatelessWidget {
   final Color textColor;
@@ -18,7 +18,7 @@ class OpketLogo extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Image.asset("assets/opket_logo.png", width: 40),
+        // Image.asset("assets/opket_logo.png", width: 40),
         SizedBox(width: AppSpacing.sm),
         Text(
           "OPKET",

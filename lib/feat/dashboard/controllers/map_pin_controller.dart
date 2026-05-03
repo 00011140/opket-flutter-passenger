@@ -10,6 +10,11 @@ class MapPinController {
     _onDrop = onDrop;
   }
 
+  void detach() {
+    _onLift = null;
+    _onDrop = null;
+  }
+
   /// Called by parent (Dashboard)
   void lift() => _onLift?.call();
   void drop() => _onDrop?.call();

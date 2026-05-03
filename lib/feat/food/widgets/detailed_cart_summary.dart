@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:opket/components/dashed_divider.dart';
+import 'package:opket/core/widgets/dashed_divider.dart';
 import 'package:opket/feat/food/widgets/basket_items.dart';
 import 'package:opket/feat/food/widgets/basket_summary.dart';
 import 'package:opket/feat/food/widgets/delivery_fee.dart';

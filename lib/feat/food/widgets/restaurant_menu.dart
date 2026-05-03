@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:opket/components/app_container.dart';
-import 'package:opket/core/spacing.dart';
+import 'package:opket/core/widgets/app_container.dart';
+import 'package:opket/core/theme/spacing.dart';
 import 'package:opket/feat/food/cubit/cart_cubit.dart';
 import 'package:opket/feat/food/cubit/cart_state.dart';
 import 'package:opket/feat/food/cubit/menu_items_cubit.dart';
@@ -9,7 +9,7 @@ import 'package:opket/feat/food/cubit/restaurant_categories_cubit.dart';
 import 'package:opket/feat/food/models/category_model.dart';
 import 'package:opket/feat/food/models/restaurant_model.dart';
 import 'package:opket/feat/food/widgets/restaurant_categories.dart';
-import 'package:opket/utils/extensions.dart';
+import 'package:opket/core/utils/extensions.dart';
 
 import 'category_section_sliver.dart';
 

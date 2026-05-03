@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:opket/constants/app_icons.dart';
-import 'package:opket/core/spacing.dart';
+import 'package:opket/core/constants/app_icons.dart';
+import 'package:opket/core/theme/spacing.dart';
 import 'package:opket/feat/dashboard/controllers/map_pin_controller.dart';
 import 'package:opket/feat/food/cubit/delivery_fee_cubit.dart';
-import 'package:opket/feat/ride/cubit/current_ride_cubit.dart';
-import 'package:opket/feat/ride/cubit/current_ride_state.dart';
-import 'package:opket/utils/extensions.dart';
+import 'package:opket/core/utils/extensions.dart';
 
 class AnimatedMapPin extends StatefulWidget {
   const AnimatedMapPin({
@@ -55,49 +53,41 @@ class _AnimatedMapPinState extends State<AnimatedMapPin>
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<CurrentRideCubit, CurrentRideState>(
-      builder: (context, state) {
-        final show = state.status == RideStatus.idle;
-        if (show) {
-          return SizedBox(
-            height: 85,
-            child: Stack(
-              clipBehavior: Clip.none,
-              alignment: Alignment.center,
-              children: [
-                AnimatedBuilder(
-                  animation: _animation,
-                  builder: (_, child) => Transform.translate(
-                    offset: Offset(0, _animation.value),
-                    child: child,
-                  ),
-                  child: MapPinWidget(),
-                ),
-                // Shadow
-                Positioned(
-                  bottom: 0,
-                  child: Container(
-                    width: 12,
-                    height: 12,
-                    decoration: BoxDecoration(
-                      color: Colors.transparent,
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
-                          blurRadius: 4,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
+    return SizedBox(
+      height: 85,
+      child: Stack(
+        clipBehavior: Clip.none,
+        alignment: Alignment.center,
+        children: [
+          AnimatedBuilder(
+            animation: _animation,
+            builder: (_, child) => Transform.translate(
+              offset: Offset(0, _animation.value),
+              child: child,
             ),
-          );
-        }
-        return Container();
-      },
+            child: MapPinWidget(),
+          ),
+          // Shadow
+          Positioned(
+            bottom: 0,
+            child: Container(
+              width: 12,
+              height: 12,
+              decoration: BoxDecoration(
+                color: Colors.transparent,
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    blurRadius: 4,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

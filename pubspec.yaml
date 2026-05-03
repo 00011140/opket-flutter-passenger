@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.0.50+2
+version: 1.0.51+1
 environment:
   sdk: ^3.10.4
 
@@ -53,6 +53,8 @@ dependencies:
   firebase_messaging: ^16.1.1
   get_it: ^8.2.0
   cached_network_image: ^3.4.1
+  dartz: ^0.10.1
+  path_drawing: ^1.0.1
 
 dev_dependencies:
   flutter_test: 
@@ -81,6 +83,7 @@ flutter_native_splash:
   ios: true
   color: "#FFEA2D"
   image: assets/android_splash.png
+  image_ios: assets/ios-splash.png
 
   android_12:
     android: true
@@ -100,10 +103,9 @@ flutter:
   assets:
     - assets/ride_accepted.mp3
     - assets/ic_foreground.png
-    - assets/opket_logo.png
     - assets/taxi_icon.png
+    - assets/pickup_location_pin.png
     - assets/taxi_button_image.png
-    - assets/pickup_location.png
     - assets/map_style.json
     - assets/Taxi.json
     - assets/premium.json
@@ -124,8 +126,13 @@ flutter:
   fonts:
     - family: Nunito
       fonts:
-        - asset: assets/fonts/Nunito-Black.ttf
+        - asset: assets/fonts/Nunito-Regular.ttf
         - asset: assets/fonts/Nunito-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Nunito-Light.ttf
+          weight: 300
+        - asset: assets/fonts/Nunito-Italic.ttf
+          style: italic
     - family: WorkSans
       fonts:
         - asset: assets/fonts/WorkSans-Bold.ttf
@@ -134,4 +141,10 @@ flutter:
       fonts:
         - asset: assets/fonts/AppIcons.ttf
         - asset: assets/fonts/Icons.ttf
+    - family: AppIconsV2
+      fonts:
+        - asset: assets/fonts/AppIconsV2.ttf
+    - family: AppIconsV3
+      fonts:
+        - asset: assets/fonts/AppIconsV3.ttf
         

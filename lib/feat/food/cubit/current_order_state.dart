@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
-import 'package:opket/models/driver_location.dart';
-import 'package:opket/models/ride_model.dart';
+import 'package:opket/core/models/driver_location.dart';
+import 'package:opket/core/models/driver_model.dart';
 
 enum OrderStatus {
   idle,

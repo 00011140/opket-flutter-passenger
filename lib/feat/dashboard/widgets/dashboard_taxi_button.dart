@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:opket/components/app_card.dart';
-import 'package:opket/core/spacing.dart';
-import 'package:opket/routes/route_names.dart';
+import 'package:opket/core/widgets/app_card.dart';
+import 'package:opket/core/theme/spacing.dart';
+import 'package:opket/app/router/route_names.dart';
 
 class TaxiButton extends StatelessWidget {
   const TaxiButton({super.key});

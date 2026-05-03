@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:opket/core/spacing.dart';
+import 'package:opket/core/theme/spacing.dart';
 import 'package:opket/feat/profile/custom_card.dart';
 
 class SingleSettingContainer extends StatelessWidget {

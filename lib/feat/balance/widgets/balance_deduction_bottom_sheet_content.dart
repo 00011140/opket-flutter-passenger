@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:opket/components/app_button_rectangle.dart';
+import 'package:opket/core/widgets/app_button_rectangle.dart';
 import 'package:opket/feat/balance/cubit/balance_cubit.dart';
 import 'package:opket/feat/balance/cubit/pay_fare_cubit.dart';
 import 'package:opket/feat/balance/models/pay_fare_model.dart';
 import 'package:opket/feat/balance/widgets/balance_info.dart';
-import 'package:opket/feat/ride/cubit/current_ride_cubit.dart';
-import 'package:opket/utils/extensions.dart';
+import 'package:opket/core/utils/extensions.dart';
 
 class BalanceDeductionBottomSheetContent extends StatefulWidget {
   const BalanceDeductionBottomSheetContent({

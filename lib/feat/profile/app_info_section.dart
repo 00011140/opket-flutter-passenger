@@ -1,8 +1,10 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:opket/feat/my_rides/driver_rides_widget.dart';
 import 'package:opket/feat/profile/custom_card.dart';
 import 'package:opket/feat/profile/delete_account_confirmation.dart';
-import 'package:opket/routes/route_names.dart';
-import 'package:opket/services/app_version_reporter.dart';
+import 'package:opket/app/router/route_names.dart';
+import 'package:opket/core/services/app_report_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'separator.dart';
@@ -22,7 +24,7 @@ class _AppInfoSectionState extends State<AppInfoSection> {
   @override
   void initState() {
     Future.delayed(Duration.zero, () async {
-      final result = await AppVersionReporter.getAppVersion();
+      final result = await AppVersionReportService.getAppVersion();
 
       setState(() {
         appVersion = result;
@@ -78,22 +80,9 @@ class _AppInfoSectionState extends State<AppInfoSection> {
               ),
               Separator(),
               SingleSettingContainer(
-                onTap: () {
-                  // Share.share(
-                  //   'Check out Bettered, the ultimate habit tracker app! Download now: https://play.google.com/store/apps/details?id=com.app.apexhabit', // Replace with your actual app link
-                  //   subject: 'Join Bettered Today!',
-                  // );
-                },
+                onTap: _navigate,
                 icondata: Icons.text_rotation_angleup_rounded,
                 title: "Safarlarim",
-                rightContent: Text(
-                  "Tez kunda",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.normal,
-                    color: Colors.grey.shade400,
-                  ),
-                ),
               ),
               if (widget.phone != null) Separator(),
               if (widget.phone != null)
@@ -108,6 +97,15 @@ class _AppInfoSectionState extends State<AppInfoSection> {
           ),
         ),
       ],
+    );
+  }
+
+  void _navigate() {
+    FocusManager.instance.primaryFocus?.unfocus();
+
+    Navigator.push(
+      context,
+      CupertinoPageRoute(builder: (_) => DriverRidesPage()),
     );
   }
 

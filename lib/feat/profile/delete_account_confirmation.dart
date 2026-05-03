@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:opket/components/app_card.dart';
-import 'package:opket/components/app_icon_button_rectangle.dart';
-import 'package:opket/core/spacing.dart';
+import 'package:opket/core/widgets/app_card.dart';
+import 'package:opket/core/widgets/app_icon_button_rectangle.dart';
+import 'package:opket/core/theme/spacing.dart';
 import 'package:opket/feat/profile/cubit/delete_account_cubit.dart';
 
 class DeleteAccountConfirmationDialog extends StatefulWidget {

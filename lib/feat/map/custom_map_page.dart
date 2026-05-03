@@ -3,13 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:opket/components/app_container.dart';
-import 'package:opket/components/custom_back_button.dart';
-import 'package:opket/components/map_grid_loader.dart';
-import 'package:opket/core/spacing.dart';
+import 'package:opket/core/widgets/app_container.dart';
+import 'package:opket/core/widgets/custom_back_button.dart';
+import 'package:opket/core/widgets/map_grid_loader.dart';
+import 'package:opket/core/theme/spacing.dart';
 import 'package:opket/feat/dashboard/controllers/dashboard_map_controller.dart';
 import 'package:opket/feat/dashboard/controllers/map_pin_controller.dart';
-import 'package:opket/feat/dashboard/cubit/location_confirmation_cubit.dart';
 import 'package:opket/feat/dashboard/widgets/animated_map_pin.dart';
 import 'package:opket/feat/dashboard/widgets/recenter_button.dart';
 import 'package:opket/feat/dashboard/widgets/turnon_notification_dialog.dart';
@@ -19,9 +18,8 @@ import 'package:opket/feat/food/cubit/delivery_fee_cubit.dart';
 import 'package:opket/feat/food/cubit/order_food_cubit.dart';
 import 'package:opket/feat/food/models/delivery_fee_request_body.dart';
 import 'package:opket/feat/food/widgets/menu_basket.dart';
-import 'package:opket/feat/ride/cubit/current_ride_cubit.dart';
-import 'package:opket/services/location_service.dart';
-import 'package:opket/utils/distaneInMeters.dart';
+import 'package:opket/core/services/location_service.dart';
+import 'package:opket/core/utils/distaneInMeters.dart';
 
 class CustomMapPage extends StatefulWidget {
   const CustomMapPage({super.key});
@@ -37,7 +35,7 @@ class _CustomMapPageState extends State<CustomMapPage> {
   bool _isUserLocation = true;
 
   /// ───────────── Controllers ─────────────
-  late final DashboardMapController _map;
+  late final GoogleMapsController _map;
   late final MapPinController _pinController;
 
   /// ───────────── Lifecycle ─────────────
@@ -46,11 +44,9 @@ class _CustomMapPageState extends State<CustomMapPage> {
     super.initState();
 
     _pinController = MapPinController();
-    _map = DashboardMapController();
-    context.read<LocationConfirmationCubit>().setData(map: _map);
-    _map.init().then((v) {
-      context.read<CurrentRideCubit>().restoreRide();
-    });
+    _map = GoogleMapsController();
+    // context.read<LocationConfirmationCubit>().setData(map: _map);
+    _map.init();
 
     _getCurrentLocation();
   }
@@ -58,7 +54,7 @@ class _CustomMapPageState extends State<CustomMapPage> {
   /// ───────────── Location ─────────────
   Future<void> _getCurrentLocation() async {
     try {
-      final position = await LocationService.getCurrentPosition(context);
+      final position = await LocationService.getCurrentPosition();
       if (position == null) return;
 
       final latLng = LatLng(position.latitude, position.longitude);
@@ -112,7 +108,7 @@ class _CustomMapPageState extends State<CustomMapPage> {
                     mapType: MapType.normal,
                     initialCameraPosition: CameraPosition(
                       target: _map.currentLocation!,
-                      zoom: 18,
+                      zoom: 16.5,
                     ),
                     markers: {
                       if (_map.driverMarker != null) _map.driverMarker!,
@@ -214,9 +210,9 @@ class _CustomMapPageState extends State<CustomMapPage> {
     setState(() {
       _isUserLocation = distance < 25;
     });
-    context.read<LocationConfirmationCubit>().setData(
-      isUserLocation: _isUserLocation,
-    );
+    // context.read<LocationConfirmationCubit>().setData(
+    //   isUserLocation: _isUserLocation,
+    // );
     _calculateDeliveryFee();
     // _hideHint();
   }
@@ -240,6 +236,6 @@ class _CustomMapPageState extends State<CustomMapPage> {
   }
 
   void onRecenter() async {
-    await _map.recenterToUser(context, onLocationEnabled: _getCurrentLocation);
+    await _map.recenterToUser();
   }
 }

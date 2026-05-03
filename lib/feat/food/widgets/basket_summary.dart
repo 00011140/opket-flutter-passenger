@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:opket/feat/food/cubit/cart_cubit.dart';
 import 'package:opket/feat/food/cubit/cart_state.dart';
 import 'package:opket/feat/food/cubit/delivery_fee_cubit.dart';
-import 'package:opket/utils/extensions.dart';
+import 'package:opket/core/utils/extensions.dart';
 import 'package:shimmer/shimmer.dart';
 
 class BasketSummary extends StatelessWidget {

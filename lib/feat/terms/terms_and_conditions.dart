@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:opket/components/app_container.dart';
+import 'package:opket/core/widgets/app_container.dart';
 
 const terms = '''
 Foydalanuvchi Shartlari (Terms and Conditions)
