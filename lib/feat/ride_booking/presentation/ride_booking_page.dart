@@ -36,6 +36,7 @@ class _RideBookingPageState extends State<RideBookingPage>
         ),
         child: Scaffold(
           extendBodyBehindAppBar: true,
+          resizeToAvoidBottomInset: false,
 
           // appBar: AppBar(
           //   toolbarHeight: 80,
