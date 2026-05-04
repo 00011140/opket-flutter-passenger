@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:opket/core/theme/colors.dart';
 import 'package:opket/core/theme/typography.dart';
 
 final ThemeData appLightTheme = ThemeData(
@@ -15,4 +16,9 @@ final ThemeData appLightTheme = ThemeData(
   textTheme: AppTypography.textTheme,
   highlightColor: Colors.transparent,
   splashColor: const Color.fromARGB(20, 0, 0, 0),
+  textSelectionTheme: const TextSelectionThemeData(
+    cursorColor: AppColors.primary,
+    selectionColor: AppColors.primary,
+    selectionHandleColor: Colors.black,
+  ),
 );

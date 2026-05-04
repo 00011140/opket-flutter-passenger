@@ -37,16 +37,6 @@ class _RideBookingPageState extends State<RideBookingPage>
         child: Scaffold(
           extendBodyBehindAppBar: true,
           resizeToAvoidBottomInset: false,
-
-          // appBar: AppBar(
-          //   toolbarHeight: 80,
-          //   backgroundColor: Colors.transparent,
-          //   elevation: 0,
-          //   automaticallyImplyLeading: false,
-          //   leading: null,
-          //   centerTitle: true,
-          //   title: AppbarLogo(),
-          // ),
           body: SafeArea(
             top: true,
             bottom: false,
@@ -59,9 +49,13 @@ class _RideBookingPageState extends State<RideBookingPage>
                 RideEffectListener(),
                 RideBookingListener(),
                 MapPin(),
-                Positioned(
-                  top: AppSpacing.sm_md,
-                  child: RideBookingTopTabbar(),
+                BlocBuilder<ActiveRideCubit, ActiveRideState>(
+                  builder: (context, state) {
+                    return _AnimatedTopWidget(
+                      visible: state.status == RideStatus.idle,
+                      child: FoodLogo(),
+                    );
+                  },
                 ),
               ],
             ),
@@ -85,5 +79,29 @@ class _RideBookingPageState extends State<RideBookingPage>
         showAppModelBottomSheet(context, const AuthPage());
       });
     }
+  }
+}
+
+class _AnimatedTopWidget extends StatelessWidget {
+  final bool visible;
+  final Widget child;
+
+  const _AnimatedTopWidget({required this.visible, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    final topPadding = MediaQuery.of(context).viewPadding.top;
+
+    return AnimatedPositioned(
+      duration: const Duration(milliseconds: 400),
+      curve: Curves.easeOutCubic,
+      top: visible ? topPadding : -100, // slide up when hidden
+
+      child: AnimatedOpacity(
+        duration: const Duration(milliseconds: 300),
+        opacity: visible ? 1 : 0,
+        child: child,
+      ),
+    );
   }
 }

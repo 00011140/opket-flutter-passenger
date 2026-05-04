@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:opket/core/widgets/app_icon_button_rectangle.dart';
 import 'package:opket/core/widgets/custom_textfield.dart';
-import 'package:opket/core/widgets/samsung_bottom_sheet.dart';
 import 'package:opket/core/theme/spacing.dart';
 import 'package:opket/feat/auth/presentation/cubit/otp_cubit.dart';
 import 'package:opket/feat/auth/presentation/cubit/otp_state.dart';
@@ -25,6 +24,14 @@ class _PhoneNumberState extends State<PhoneNumber> {
   bool _validate = false;
   bool _agreed = false;
   bool _shake = false;
+
+  @override
+  void initState() {
+    Future.delayed(Duration(seconds: 1), () {
+      focusNode.requestFocus();
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +68,6 @@ class _PhoneNumberState extends State<PhoneNumber> {
             ),
           BlocBuilder<OtpCubit, OtpState>(
             builder: (context, state) {
-              print(state);
               return AppIconButtonRectangle(
                 text: "Saqlash",
                 onPressed: onSave,

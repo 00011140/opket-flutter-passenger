@@ -80,7 +80,7 @@ class _RideOptionsInstantState extends State<RideOptionsInstant> {
           }
         }
       },
-      child: SizedBox(height: 55, child: Row(children: _optionsList())),
+      child: Row(children: _optionsList()),
     );
   }
 

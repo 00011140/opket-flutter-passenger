@@ -14,13 +14,15 @@ class RideBookingSheetIdle extends StatelessWidget {
         children: [
           AppContainer(
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Expanded(
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: RideOptionsInstant(),
-                  ),
-                ),
+                // FoodLogo(),
+                // Expanded(
+                //   child: SingleChildScrollView(
+                //     scrollDirection: Axis.horizontal,
+                //     child: RideOptionsInstant(),
+                //   ),
+                // ),
                 SizedBox(width: AppSpacing.sm),
                 RecenterButton(onTap: onRecenter),
               ],
@@ -47,8 +49,8 @@ class RideBookingSheetIdle extends StatelessWidget {
                 children: [
                   BottomsheetGrabber(),
                   SizedBox(height: AppSpacing.sm),
-                  // RideBookingIdleInstantOption(),
-                  // SizedBox(height: AppSpacing.sm_md),
+                  RideOptionsInstant(),
+                  SizedBox(height: AppSpacing.sm_md),
                   Row(
                     children: [
                       AppbarMenu(),

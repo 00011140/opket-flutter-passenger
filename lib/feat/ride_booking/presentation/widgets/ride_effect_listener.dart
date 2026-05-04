@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:opket/core/services/location_service.dart';
 import 'package:opket/core/widgets/allow_location_dialog.dart';
 import 'package:opket/feat/active_ride/domain/models/route_update.dart';
 import 'package:opket/feat/active_ride/index.dart';
@@ -95,6 +96,8 @@ class RideEffectListener extends StatelessWidget {
 
   void _showLocationDialog(BuildContext context) {
     Future.delayed(Duration(seconds: 1), () async {
+      final isPremissionGranted = await LocationService.isPermissionGranted();
+      if (isPremissionGranted) return;
       showDialog(
         context: context,
         builder: (context) {

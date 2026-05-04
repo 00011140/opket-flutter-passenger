@@ -29,6 +29,7 @@ class AppButton extends StatelessWidget {
     return FilledButton(
       style: FilledButton.styleFrom(
         backgroundColor: backgroundColor,
+        disabledBackgroundColor: Colors.grey.shade100,
         padding: padding,
       ),
       onPressed: isLoading || !enabled ? null : onPressed,
@@ -37,8 +38,8 @@ class AppButton extends StatelessWidget {
               width: 22,
               height: 22,
               child: CircularProgressIndicator(
-                strokeWidth: 2.5,
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                strokeWidth: 1.5,
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.grey),
               ),
             )
           : customText ??

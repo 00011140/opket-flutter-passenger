@@ -42,7 +42,7 @@ class OtpCubit extends Cubit<OtpState> {
         ),
       );
     } catch (e) {
-      emit(state.copyWith(error: e.toString()));
+      emit(state.copyWith(error: e.toString(), loading: false));
     }
   }
 
@@ -60,11 +60,12 @@ class OtpCubit extends Cubit<OtpState> {
         result.fold((l) => state.copyWith(error: l.message), (r) {
           return state.copyWith(
             codeState: r ? OtpCodeState.success : OtpCodeState.error,
+            loading: false,
           );
         }),
       );
     } catch (e) {
-      emit(state.copyWith(error: e.toString()));
+      emit(state.copyWith(error: e.toString(), loading: false));
     }
   }
 
@@ -76,12 +77,24 @@ class OtpCubit extends Cubit<OtpState> {
       final result = await registerUserUsecase(params);
 
       emit(
-        result.fold((l) => state.copyWith(error: l.message), (r) {
-          return state.copyWith(step: OtpStep.registered, loading: false);
-        }),
+        result.fold(
+          (l) => state.copyWith(
+            error: l.message,
+            loading: false,
+            codeState: OtpCodeState.idle,
+          ),
+          (r) {
+            return state.copyWith(
+              step: OtpStep.registered,
+              codeState: OtpCodeState.idle,
+              loading: false,
+              error: null,
+            );
+          },
+        ),
       );
     } catch (e) {
-      emit(state.copyWith(error: e.toString()));
+      emit(state.copyWith(error: e.toString(), loading: false));
     }
   }
 

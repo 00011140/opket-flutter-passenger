@@ -4,6 +4,7 @@ import 'dart:math';
 // import 'package:doppi/theme/spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:opket/core/theme/colors.dart';
 
 class CustomTextField extends StatelessWidget {
   final String? label;
@@ -128,7 +129,7 @@ class CustomTextField extends StatelessWidget {
         hintStyle: TextStyle(color: Colors.grey),
         enabledBorder: _border(theme),
         disabledBorder: _border(theme),
-        focusedBorder: _border(theme),
+        focusedBorder: _focusedBorder(theme),
         focusedErrorBorder: _errorBorder(theme),
         errorBorder: _errorBorder(theme),
         contentPadding:
@@ -148,6 +149,11 @@ class CustomTextField extends StatelessWidget {
     return UnderlineInputBorder(
       borderSide: BorderSide(color: Colors.grey.shade300),
     );
+  }
+
+  UnderlineInputBorder? _focusedBorder(ThemeData theme) {
+    if (!border) return null;
+    return UnderlineInputBorder(borderSide: BorderSide(color: Colors.black54));
   }
 
   UnderlineInputBorder? _errorBorder(ThemeData theme) {

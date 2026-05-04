@@ -38,6 +38,8 @@ class OtpService {
     final savedUser = prefs.getInt(_otpUserKey);
     final expiry = prefs.getInt(_otpExpiryKey);
 
+    print(savedOtp);
+
     if (savedOtp == null || savedUser == null || expiry == null) {
       return false; // No OTP saved
     }

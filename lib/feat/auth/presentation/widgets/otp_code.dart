@@ -109,17 +109,28 @@ class _OtpCodeState extends State<OtpCode> with CodeAutoFill {
             ),
 
             SizedBox(height: 15),
-            OtpInputField(
-              controller: _otpCtrl,
-              focusNode: otpCodeFocusNode,
-              state: widget.state.codeState,
-              onCompleted: (code) {
-                context.read<OtpCubit>().verifyOtp(int.parse(code));
+            BlocListener<OtpCubit, OtpState>(
+              listenWhen: (prev, curr) =>
+                  prev.codeState != curr.codeState &&
+                  curr.codeState == OtpCodeState.error,
+              listener: (context, state) async {
+                await Future.delayed(const Duration(milliseconds: 500));
 
-                // context.read<OtpSmsCubit>().verifyOtp(code);
-                // setState(() => hasOtpError = false);
-                // sl<PhoneVerificationCubit>().verifyOtp(code);
+                _otpCtrl.clear();
+
+                // Optional: reset state so next error can trigger again
+                context.read<OtpCubit>().emit(
+                  state.copyWith(codeState: OtpCodeState.idle),
+                );
               },
+              child: OtpInputField(
+                controller: _otpCtrl,
+                focusNode: otpCodeFocusNode,
+                state: widget.state.codeState,
+                onCompleted: (code) {
+                  context.read<OtpCubit>().verifyOtp(int.parse(code));
+                },
+              ),
             ),
             const SizedBox(height: 20),
             Align(

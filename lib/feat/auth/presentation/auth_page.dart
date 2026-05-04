@@ -28,7 +28,7 @@ class _AuthPageState extends State<AuthPage> {
             } else if (state.step == OtpStep.codeSent) {
               return OtpCode(state: state);
             } else {
-              return SizedBox.shrink();
+              return PhoneNumber();
             }
           },
         ),

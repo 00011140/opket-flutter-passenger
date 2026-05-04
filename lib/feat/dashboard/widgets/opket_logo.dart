@@ -25,7 +25,7 @@ class OpketLogo extends StatelessWidget {
           style: TextStyle(
             fontFamily: 'WorkSans',
             fontSize: 25,
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.w500,
             color: isLight ? Colors.white : null,
           ),
         ),

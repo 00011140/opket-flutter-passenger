@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'dart:async';
 
-import 'dart:async';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:opket/core/theme/spacing.dart';
+import 'package:opket/feat/auth/presentation/cubit/otp_cubit.dart';
 
 enum OtpCodeState { idle, success, error }
 
@@ -16,6 +15,7 @@ class OtpInputField extends StatefulWidget {
   final FocusNode focusNode;
   final OtpCodeState state;
   final ValueChanged<String>? onCompleted;
+  final VoidCallback? onEditing; // notify parent to reset error
 
   const OtpInputField({
     super.key,
@@ -24,6 +24,7 @@ class OtpInputField extends StatefulWidget {
     required this.focusNode,
     this.state = OtpCodeState.idle,
     this.onCompleted,
+    this.onEditing,
   });
 
   @override
@@ -34,12 +35,17 @@ class _OtpInputFieldState extends State<OtpInputField>
     with SingleTickerProviderStateMixin {
   late AnimationController _shakeCtrl;
   late Animation<double> _shakeAnim;
+
   Timer? _cursorTimer;
   bool _showCursor = true;
+
+  int _cursorIndex = 0;
 
   @override
   void initState() {
     super.initState();
+
+    _cursorIndex = widget.controller.text.length;
 
     _shakeCtrl = AnimationController(
       vsync: this,
@@ -82,6 +88,31 @@ class _OtpInputFieldState extends State<OtpInputField>
     super.dispose();
   }
 
+  void _handleTap(int index) {
+    widget.focusNode.requestFocus();
+
+    final textLength = widget.controller.text.length;
+    final position = index.clamp(0, textLength);
+
+    setState(() {
+      _cursorIndex = position;
+    });
+
+    widget.controller.selection = TextSelection.collapsed(offset: position);
+  }
+
+  void _handleTextChange(String value) {
+    setState(() {
+      _cursorIndex = value.length;
+    });
+
+    widget.onEditing?.call(); // let parent reset error safely
+
+    if (value.length == widget.length) {
+      widget.onCompleted?.call(value);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final text = widget.controller.text;
@@ -95,10 +126,12 @@ class _OtpInputFieldState extends State<OtpInputField>
         );
       },
       child: Stack(
+        alignment: Alignment.center,
         children: [
-          /// Hidden input
-          Opacity(
-            opacity: 0,
+          /// Hidden input (no weird hitbox issues)
+          SizedBox(
+            width: 0,
+            height: 0,
             child: TextField(
               controller: widget.controller,
               focusNode: widget.focusNode,
@@ -108,31 +141,27 @@ class _OtpInputFieldState extends State<OtpInputField>
                 FilteringTextInputFormatter.digitsOnly,
                 LengthLimitingTextInputFormatter(widget.length),
               ],
-              onChanged: (value) {
-                setState(() {});
-                if (value.length == widget.length) {
-                  widget.onCompleted?.call(value);
-                }
-              },
+              onChanged: _handleTextChange,
             ),
           ),
 
-          /// Visible boxes
-          GestureDetector(
-            onTap: () => widget.focusNode.requestFocus(),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(widget.length, (index) {
-                final char = index < text.length ? text[index] : '';
-                final isActive = index == text.length;
+          /// Visible UI
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(widget.length, (index) {
+              final char = index < text.length ? text[index] : '';
+              final isActive = index == _cursorIndex;
 
-                return _OtpBox(
+              return GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () => _handleTap(index),
+                child: _OtpBox(
                   value: char,
                   showCursor: isActive && _showCursor,
                   state: widget.state,
-                );
-              }),
-            ),
+                ),
+              );
+            }),
           ),
         ],
       ),
@@ -173,7 +202,7 @@ class _OtpBox extends StatelessWidget {
       margin: EdgeInsets.symmetric(horizontal: AppSpacing.sm),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: borderColor, width: 1.8),
+        border: Border.all(color: borderColor, width: 1.5),
       ),
       child: value.isNotEmpty
           ? Text(value, style: Theme.of(context).textTheme.headlineMedium)
