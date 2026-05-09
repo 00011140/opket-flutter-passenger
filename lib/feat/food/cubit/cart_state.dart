@@ -5,13 +5,11 @@ class CartState extends Equatable {
   final String? restaurantId;
   final int? deliveryFee;
   final Map<String, CartItem> itemsById;
-  final String? consumerNote;
 
   const CartState({
     required this.restaurantId,
     required this.itemsById,
     this.deliveryFee,
-    this.consumerNote,
   });
 
   factory CartState.initial() =>
@@ -28,30 +26,21 @@ class CartState extends Equatable {
     String? restaurantId,
     Map<String, CartItem>? itemsById,
     int? deliveryFee,
-    String? consumerNote,
   }) {
     return CartState(
       restaurantId: restaurantId ?? this.restaurantId,
       itemsById: itemsById ?? this.itemsById,
       deliveryFee: deliveryFee ?? this.deliveryFee,
-      consumerNote: consumerNote ?? this.consumerNote,
     );
   }
 
-  Map<String, dynamic> toCreateOrderJson() {
-    final json = <String, dynamic>{
-      "restaurantId": restaurantId,
-      "items": items.map((e) => e.toOrderJson()).toList(),
-      "itemsSubtotal": subtotal,
-      "deliveryFee": deliveryFee,
-    };
-    final note = consumerNote?.trim() ?? "";
-    if (note.isNotEmpty) {
-      json["consumerNote"] = note;
-    }
-    return json;
-  }
+  Map<String, dynamic> toCreateOrderJson() => {
+    "restaurantId": restaurantId,
+    "items": items.map((e) => e.toOrderJson()).toList(),
+    "itemsSubtotal": subtotal,
+    "deliveryFee": deliveryFee,
+  };
 
   @override
-  List<Object?> get props => [restaurantId, itemsById, deliveryFee, consumerNote];
+  List<Object?> get props => [restaurantId, itemsById];
 }

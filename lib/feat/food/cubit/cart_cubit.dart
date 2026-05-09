@@ -102,10 +102,6 @@ class CartCubit extends Cubit<CartState> {
     emit(state.copyWith(itemsById: map));
   }
 
-  void setConsumerNote(String? note) {
-    emit(state.copyWith(consumerNote: note ?? ""));
-  }
-
   int getQty(String menuItemId) {
     return state.itemsById[menuItemId]?.quantity ?? 0;
   }
