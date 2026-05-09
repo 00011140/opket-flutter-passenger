@@ -170,6 +170,7 @@ class _CustomMapPageState extends State<CustomMapPage> {
                         bottom: 0,
                         onTap: _orderFood,
                         buttonTitle: "Tasdiqlash",
+                        enableRestaurantNote: true,
                       ),
                     ],
                   ),
