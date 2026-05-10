@@ -66,7 +66,8 @@ class _RideOptionsInstantState extends State<RideOptionsInstant> {
     return BlocListener<RideOptionsCubit, RideOptionsState>(
       listener: (context, state) {
         if (state is RideOptionsSuccess) {
-          final instantLabels = state.options.where((o) => o.instant).toList();
+          final instantLabels = state.options.where((o) => o.instant).toList()
+            ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
 
           if (instantLabels.isEmpty) return;
 
@@ -80,7 +81,10 @@ class _RideOptionsInstantState extends State<RideOptionsInstant> {
           }
         }
       },
-      child: Row(children: _optionsList()),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: AppContainer(child: Row(children: _optionsList())),
+      ),
     );
   }
 

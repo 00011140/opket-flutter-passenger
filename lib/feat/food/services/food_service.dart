@@ -98,7 +98,10 @@ class FoodService {
         "/food/order-food",
         data: {
           ...data.toCreateOrderJson(),
-          "dropoff": {'lat': position.latitude, 'lon': position.longitude},
+          "dropoff": {
+            'latitude': position.latitude,
+            'longitude': position.longitude,
+          },
         },
       );
 

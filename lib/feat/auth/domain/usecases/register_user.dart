@@ -16,6 +16,7 @@ class RegisterUser extends UseCase<void, RegisterUserParams> {
 
 class RegisterUserParams {
   final int phone;
+  final String? manualReferralCode;
 
-  RegisterUserParams({required this.phone});
+  RegisterUserParams({required this.phone, this.manualReferralCode});
 }

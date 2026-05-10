@@ -15,7 +15,10 @@ class RideBookingListener extends StatelessWidget {
       listener: (context, state) {
         if (state is RequestRideLoading) {
         } else if (state is RequestRideSuccess) {
-          context.read<ActiveRideCubit>().onRideCreated(state.rideId);
+          context.read<ActiveRideCubit>().onRideCreated(
+            state.rideId,
+            searchDurationMs: state.searchDurationMs,
+          );
         } else if (state is CancelRideSuccess) {
           context.read<RideMapCubit>().onRideCancelled();
           context.read<ActiveRideCubit>().reset();

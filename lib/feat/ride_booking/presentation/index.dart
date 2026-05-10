@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,6 +13,7 @@ import 'package:opket/core/models/driver_location.dart';
 import 'package:opket/core/models/driver_model.dart';
 import 'package:opket/core/utils/extensions.dart';
 import 'package:opket/core/widgets/allow_location_dialog.dart';
+import 'package:opket/core/widgets/app_update_available.dart';
 import 'package:opket/core/widgets/app_card.dart';
 import 'package:opket/core/widgets/app_icon_button_rectangle.dart';
 import 'package:opket/core/widgets/app_overlay.dart';

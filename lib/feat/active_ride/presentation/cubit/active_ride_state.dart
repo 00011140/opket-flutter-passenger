@@ -7,7 +7,24 @@ enum RideStatus {
   accepted,
   arrived,
   started,
-  completed,
+  completed;
+
+  static RideStatus fromString(String? value) {
+    if (value == null) return RideStatus.idle;
+
+    // normalize (optional but safer)
+    final normalized = value.toLowerCase();
+
+    // custom rule
+    if (normalized == 'completed') {
+      return RideStatus.idle;
+    }
+
+    return RideStatus.values.firstWhere(
+      (e) => e.name == normalized,
+      orElse: () => RideStatus.idle,
+    );
+  }
 }
 
 class ActiveRideState extends Equatable {
@@ -19,6 +36,8 @@ class ActiveRideState extends Equatable {
   final DriverLocation? location;
   final LatLng? pickupLocation;
   final RouteUpdate? routeUpdate;
+  final int searchDurationMs;
+  final int? searchStartedAtMs; // epoch ms when search started
 
   const ActiveRideState({
     this.rideId,
@@ -29,6 +48,8 @@ class ActiveRideState extends Equatable {
     this.location,
     this.pickupLocation,
     this.candidateDrivers,
+    this.searchDurationMs = 3 * 60 * 1000,
+    this.searchStartedAtMs,
   });
 
   ActiveRideState copyWith({
@@ -40,6 +61,8 @@ class ActiveRideState extends Equatable {
     LatLng? pickupLocation,
     RouteUpdate? routeUpdate,
     List<DriverLocation>? candidateDrivers,
+    int? searchDurationMs,
+    int? searchStartedAtMs,
   }) {
     return ActiveRideState(
       routeUpdate: routeUpdate ?? this.routeUpdate,
@@ -50,7 +73,17 @@ class ActiveRideState extends Equatable {
       location: location ?? this.location,
       pickupLocation: pickupLocation ?? this.pickupLocation,
       candidateDrivers: candidateDrivers ?? this.candidateDrivers,
+      searchDurationMs: searchDurationMs ?? this.searchDurationMs,
+      searchStartedAtMs: searchStartedAtMs ?? this.searchStartedAtMs,
     );
+  }
+
+  /// Remaining search duration in milliseconds (may be negative if expired).
+  int get searchRemainingMs {
+    final startedAt = searchStartedAtMs;
+    if (startedAt == null) return searchDurationMs;
+    final elapsed = DateTime.now().millisecondsSinceEpoch - startedAt;
+    return (searchDurationMs - elapsed).clamp(0, searchDurationMs);
   }
 
   Map<String, dynamic> toMap() {
@@ -61,6 +94,8 @@ class ActiveRideState extends Equatable {
       'location': location?.toMap(),
       'routeUpdate': routeUpdate?.toJson(),
       'progress': progress.toJson(),
+      'searchDurationMs': searchDurationMs,
+      'searchStartedAtMs': searchStartedAtMs,
       'pickupLocation': pickupLocation != null
           ? {
               'latitude': pickupLocation!.latitude,
@@ -73,22 +108,17 @@ class ActiveRideState extends Equatable {
   factory ActiveRideState.fromMap(Map<String, dynamic> map) {
     return ActiveRideState(
       rideId: map['rideId'] as String?,
-      status: RideStatus.values.firstWhere(
-        (e) => e.name == map['status'],
-        orElse: () => RideStatus.searching,
-      ),
+      status: RideStatus.fromString(map['status']),
       progress: RideProgress.fromJson(map['progress']),
-
       routeUpdate: map['routeUpdate'] != null
           ? RouteUpdate.fromJson(map['routeUpdate'])
           : null,
-
       driver: map['driver'] != null ? DriverModel.fromMap(map['driver']) : null,
-
       location: map['location'] != null
           ? DriverLocation.fromMap(map['location'])
           : null,
-
+      searchDurationMs: (map['searchDurationMs'] as num?)?.toInt() ?? 3 * 60 * 1000,
+      searchStartedAtMs: (map['searchStartedAtMs'] as num?)?.toInt(),
       pickupLocation: map['pickupLocation'] != null
           ? LatLng(
               map['pickupLocation']['latitude'],
@@ -97,6 +127,7 @@ class ActiveRideState extends Equatable {
           : null,
     );
   }
+
   @override
   List<Object?> get props => [
     rideId,
@@ -107,5 +138,7 @@ class ActiveRideState extends Equatable {
     pickupLocation,
     routeUpdate,
     candidateDrivers,
+    searchDurationMs,
+    searchStartedAtMs,
   ];
 }

@@ -18,7 +18,9 @@ class RouteUpdate {
   factory RouteUpdate.fromJson(Map<String, dynamic> json) {
     return RouteUpdate(
       rideId: json['rideId'] as String,
-      distanceMeters: json['distanceMeters'] as int,
+      distanceMeters: json['distanceMeters'] != null
+          ? json['distanceMeters'] as int
+          : 0,
       duration: json['duration'] as String,
       polyline: json['polyline'] as String,
       points: (json['points'] as List<dynamic>)

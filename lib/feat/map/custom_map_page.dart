@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:opket/core/widgets/app_container.dart';
 import 'package:opket/core/widgets/custom_back_button.dart';
@@ -38,6 +41,12 @@ class _CustomMapPageState extends State<CustomMapPage> {
   late final GoogleMapsController _map;
   late final MapPinController _pinController;
 
+  // Keeps _map.currentLocation in sync with the device's real GPS position
+  // so that _onCameraIdle()'s distance check stays accurate while the user
+  // is walking. Updates are silent (no setState) because currentLocation is
+  // read lazily only when the camera becomes idle.
+  StreamSubscription<Position>? _locationStreamSub;
+
   /// ───────────── Lifecycle ─────────────
   @override
   void initState() {
@@ -51,11 +60,23 @@ class _CustomMapPageState extends State<CustomMapPage> {
     _getCurrentLocation();
   }
 
+  @override
+  void dispose() {
+    _locationStreamSub?.cancel();
+    super.dispose();
+  }
+
   /// ───────────── Location ─────────────
   Future<void> _getCurrentLocation() async {
     try {
-      final position = await LocationService.getCurrentPosition();
-      if (position == null) return;
+      // Wait for a stable GPS fix before showing the map.
+      // A coarse first fix (cell tower / cached position) would cause the map
+      // to appear centered on the wrong spot and then jump once GPS settles —
+      // poor UX, especially for delivery address selection.
+      final position = await LocationService.getStablePosition();
+
+      // Guard: widget may have been disposed during the GPS wait (up to 15 s)
+      if (!mounted || position == null) return;
 
       final latLng = LatLng(position.latitude, position.longitude);
 
@@ -65,10 +86,36 @@ class _CustomMapPageState extends State<CustomMapPage> {
       setState(() {
         _isLoading = false;
       });
+      // No explicit moveCamera() needed: the GoogleMap widget is only
+      // created when _isLoading becomes false, and its initialCameraPosition
+      // is already set to _map.currentLocation. animateCamera() would require
+      // the controller to be ready (set in onMapCreated), which hasn't fired
+      // yet at this point, so the call would silently no-op anyway.
 
-      // 🔥 Move camera AFTER map is ready
-      _map.moveCamera(latLng);
+      // Begin tracking so _map.currentLocation stays current as the user
+      // moves. The stream only fires when accuracy ≤ 50 m and movement ≥ 5 m,
+      // keeping battery usage low.
+      _startLocationTracking();
     } catch (e) {}
+  }
+
+  void _startLocationTracking() {
+    _locationStreamSub?.cancel();
+    _locationStreamSub = LocationService.getAccuratePositionStream().listen(
+      (position) {
+        if (!mounted) {
+          _locationStreamSub?.cancel();
+          return;
+        }
+        // Update reference point used by _onCameraIdle() distance check.
+        // No setState — currentLocation is read lazily when camera idles,
+        // so there is no UI update needed here.
+        _map.currentLocation = LatLng(
+          position.latitude,
+          position.longitude,
+        );
+      },
+    );
   }
 
   @override

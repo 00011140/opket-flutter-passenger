@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:opket/core/theme/colors.dart';
+import 'package:opket/core/theme/spacing.dart';
 import 'package:opket/core/theme/typography.dart';
 
 final ThemeData appLightTheme = ThemeData(
@@ -20,5 +21,15 @@ final ThemeData appLightTheme = ThemeData(
     cursorColor: AppColors.primary,
     selectionColor: AppColors.primary,
     selectionHandleColor: Colors.black,
+  ),
+
+  iconButtonTheme: IconButtonThemeData(
+    style: ElevatedButton.styleFrom(
+      shape: CircleBorder(),
+      backgroundColor: Colors.white,
+      foregroundColor: Colors.black,
+      iconSize: 28,
+      padding: EdgeInsets.all(AppSpacing.sm),
+    ),
   ),
 );

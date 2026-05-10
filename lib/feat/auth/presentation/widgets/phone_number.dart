@@ -19,11 +19,13 @@ class PhoneNumber extends StatefulWidget {
 class _PhoneNumberState extends State<PhoneNumber> {
   final controller = TextEditingController();
   final focusNode = FocusNode();
+  final referralController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
   bool _validate = false;
   bool _agreed = false;
   bool _shake = false;
+  bool _showReferral = false;
 
   @override
   void initState() {
@@ -35,6 +37,8 @@ class _PhoneNumberState extends State<PhoneNumber> {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
     return Form(
       key: _formKey,
       child: Column(
@@ -59,6 +63,51 @@ class _PhoneNumberState extends State<PhoneNumber> {
             isBig: true,
             keyboardType: TextInputType.number,
           ),
+          SizedBox(height: AppSpacing.sm),
+
+          // Referral code toggle
+          GestureDetector(
+            onTap: () => setState(() => _showReferral = !_showReferral),
+            child: Row(
+              children: [
+                Icon(
+                  _showReferral ? Icons.expand_less : Icons.expand_more,
+                  size: 18,
+                  color: Colors.grey,
+                ),
+                SizedBox(width: 4),
+                Text(
+                  "Referral kodim bor",
+                  style: textTheme.bodySmall?.copyWith(color: Colors.grey),
+                ),
+              ],
+            ),
+          ),
+
+          if (_showReferral) ...[
+            SizedBox(height: AppSpacing.sm),
+            TextFormField(
+              controller: referralController,
+              onChanged: (value) {
+                context.read<OtpCubit>().setManualReferralCode(value);
+              },
+              validator: null,
+              keyboardType: TextInputType.text,
+              textCapitalization: TextCapitalization.characters,
+              decoration: InputDecoration(
+                hintText: "Referral kodni kiriting",
+                hintStyle: TextStyle(color: Colors.grey),
+                enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey.shade300),
+                ),
+                focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.black54),
+                ),
+                contentPadding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+              ),
+            ),
+          ],
+
           SizedBox(height: AppSpacing.md),
           if (Platform.isIOS)
             TermsCheckbox(
@@ -106,6 +155,7 @@ class _PhoneNumberState extends State<PhoneNumber> {
   @override
   void dispose() {
     controller.dispose();
+    referralController.dispose();
     super.dispose();
   }
 }

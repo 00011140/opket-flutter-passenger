@@ -16,13 +16,6 @@ class RideBookingSheetIdle extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // FoodLogo(),
-                // Expanded(
-                //   child: SingleChildScrollView(
-                //     scrollDirection: Axis.horizontal,
-                //     child: RideOptionsInstant(),
-                //   ),
-                // ),
                 SizedBox(width: AppSpacing.sm),
                 RecenterButton(onTap: onRecenter),
               ],
@@ -31,14 +24,18 @@ class RideBookingSheetIdle extends StatelessWidget {
           SizedBox(height: AppSpacing.sm),
           Container(
             padding: const EdgeInsets.symmetric(
-              horizontal: 16,
+              // horizontal: 16,
             ).copyWith(bottom: 8, top: AppSpacing.sm),
             decoration: BoxDecoration(
               borderRadius: const BorderRadius.vertical(
                 top: Radius.circular(24),
               ),
               boxShadow: const [
-                BoxShadow(blurRadius: 15, color: Colors.black12),
+                BoxShadow(
+                  blurRadius: 15,
+                  // spreadRadius: 10,
+                  color: Color.fromARGB(16, 0, 0, 0),
+                ),
               ],
               color: Colors.white,
             ),
@@ -51,14 +48,16 @@ class RideBookingSheetIdle extends StatelessWidget {
                   SizedBox(height: AppSpacing.sm),
                   RideOptionsInstant(),
                   SizedBox(height: AppSpacing.sm_md),
-                  Row(
-                    children: [
-                      AppbarMenu(),
-                      SizedBox(width: AppSpacing.md),
-                      Expanded(child: RequestRideButton()),
-                      SizedBox(width: AppSpacing.md),
-                      RideOptionsButton(),
-                    ],
+                  AppContainer(
+                    child: Row(
+                      children: [
+                        AppbarMenu(),
+                        SizedBox(width: AppSpacing.md),
+                        Expanded(child: RequestRideButton()),
+                        SizedBox(width: AppSpacing.md),
+                        RideOptionsButton(),
+                      ],
+                    ),
                   ),
                 ],
               ),

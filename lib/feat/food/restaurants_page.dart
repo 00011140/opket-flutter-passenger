@@ -25,10 +25,18 @@ class _RestaurantsPageState extends State<RestaurantsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // backgroundColor: Colors.transparent,
       extendBody: true,
-      appBar: AppBar(title: Text("Qulay Taom")),
-      // appBar: AppBar(toolbarHeight: 0, backgroundColor: Colors.transparent),
+      floatingActionButton: IconButton.filled(
+        style: ElevatedButton.styleFrom(
+          shadowColor: Colors.black38,
+          elevation: 4,
+        ),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+        icon: Icon(AppIcons.chevronLeft),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
       body: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: () {

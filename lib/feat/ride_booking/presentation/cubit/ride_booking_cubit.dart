@@ -21,7 +21,10 @@ class RideBookingCubit extends Cubit<RideBookingState> {
       emit(
         result.fold(
           (l) => RequestRideError(message: l.message),
-          (r) => RequestRideSuccess(rideId: r),
+          (r) => RequestRideSuccess(
+            rideId: r.rideId,
+            searchDurationMs: r.searchDurationMs,
+          ),
         ),
       );
     } catch (e) {

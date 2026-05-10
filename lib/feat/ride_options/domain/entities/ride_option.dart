@@ -6,6 +6,7 @@ class RideOption {
   final String? description;
   final bool instant;
   final double charge;
+  final int sortOrder;
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
@@ -17,6 +18,7 @@ class RideOption {
     this.titleForPassenger,
     this.instant = false,
     required this.charge,
+    this.sortOrder = 0,
     this.createdAt,
     this.updatedAt,
   });
@@ -30,6 +32,7 @@ class RideOption {
       titleForPassenger: json['title_for_passenger'],
       instant: json['instant'] ?? false,
       charge: (json['charge'] as num).toDouble(),
+      sortOrder: (json['sort_order'] as num?)?.toInt() ?? 0,
       createdAt: json['createdAt'] != null
           ? DateTime.parse(json['createdAt'])
           : null,
@@ -48,6 +51,7 @@ class RideOption {
       'title_for_passenger': titleForPassenger,
       'instant': instant,
       'charge': charge,
+      'sort_order': sortOrder,
       'createdAt': createdAt?.toIso8601String(),
       'updatedAt': updatedAt?.toIso8601String(),
     };
@@ -61,6 +65,7 @@ class RideOption {
     String? titleForPassenger,
     bool? instant,
     double? charge,
+    int? sortOrder,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -72,6 +77,7 @@ class RideOption {
       description: description ?? this.description,
       instant: instant ?? this.instant,
       charge: charge ?? this.charge,
+      sortOrder: sortOrder ?? this.sortOrder,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );

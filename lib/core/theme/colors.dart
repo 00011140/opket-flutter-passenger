@@ -5,7 +5,7 @@ class AppColors {
   static const primary = Color(0xFFFFE711); // Green
   static const secondary = Color(0xFF2196F3); // Blue
   static const error = Color(0xFFF44336); // Red
-  static const success = Color(0xFF2CCC31); // Red
+  static const success = Color.fromARGB(255, 27, 204, 33); // Red
   static const accent = Color(0xFFFBBF24); // Amber
   static const gray30 = Color(0xFFD1D5DB); // Amber
 

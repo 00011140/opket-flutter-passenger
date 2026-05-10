@@ -13,6 +13,8 @@ class RideBookingSheet extends StatelessWidget {
               visible: state.status == RideStatus.searching,
               child: RideBookingSearching(
                 candidateDrivers: state.candidateDrivers ?? [],
+                searchDurationMs: state.searchDurationMs,
+                searchStartedAtMs: state.searchStartedAtMs,
               ),
             ),
 

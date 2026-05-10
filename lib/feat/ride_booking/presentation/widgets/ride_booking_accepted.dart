@@ -39,7 +39,7 @@ class _RideBookingAcceptedState extends State<RideBookingAccepted> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Color.fromARGB(255, 19, 202, 65),
                       ),
-                      icon: Icon(Icons.phone),
+                      icon: Icon(Icons.phone, color: Colors.white),
                     ),
                   ],
                 ),

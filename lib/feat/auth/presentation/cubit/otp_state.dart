@@ -9,6 +9,7 @@ class OtpState extends Equatable {
   final String? error;
   final OtpCodeState codeState;
   final int? phone;
+  final String? manualReferralCode;
 
   const OtpState({
     this.step = OtpStep.idle,
@@ -16,6 +17,7 @@ class OtpState extends Equatable {
     this.error,
     this.codeState = OtpCodeState.idle,
     this.phone,
+    this.manualReferralCode,
   });
 
   OtpState copyWith({
@@ -24,16 +26,17 @@ class OtpState extends Equatable {
     String? error,
     OtpCodeState? codeState,
     int? phone,
+    String? manualReferralCode,
+    bool clearManualReferralCode = false,
   }) => OtpState(
     step: step ?? this.step,
     loading: loading ?? this.loading,
     error: error ?? this.error,
     codeState: codeState ?? this.codeState,
     phone: phone ?? this.phone,
+    manualReferralCode: clearManualReferralCode ? null : (manualReferralCode ?? this.manualReferralCode),
   );
 
-  // Map<String, dynamic> toJson() => {'step': step};
-
   @override
-  List<Object?> get props => [step, loading, error, codeState];
+  List<Object?> get props => [step, loading, error, codeState, manualReferralCode];
 }

@@ -18,11 +18,12 @@ class ActiveRideCubit extends Cubit<ActiveRideState> {
 
     // ✅ Always restore immediately
     emit(cachedState);
+    print(cachedState);
 
     final rideId = cachedState.rideId;
 
     // ✅ Then reconcile with backend
-    if (cachedState.status == RideStatus.searching && rideId != null) {
+    if (rideId != null) {
       await fetchCurrentRide(rideId);
     }
   }
@@ -34,11 +35,20 @@ class ActiveRideCubit extends Cubit<ActiveRideState> {
       );
 
       result.fold((l) => {}, (ride) {
+        final status = RideStatus.fromString(ride.status);
+
+        if (status == RideStatus.idle) {
+          reset();
+          ActiveRideCacheService.clearRideState();
+          sl<RideMapCubit>().clearMarkers();
+          return;
+        }
+
         emit(
           state.copyWith(
             driver: ride.driver,
             location: ride.driverLocation,
-            status: RideStatus.accepted,
+            status: status,
           ),
         );
         _saveStateToCache();
@@ -60,8 +70,15 @@ class ActiveRideCubit extends Cubit<ActiveRideState> {
     _saveStateToCache();
   }
 
-  void onRideCreated(String rideId) {
-    emit(state.copyWith(rideId: rideId, status: RideStatus.searching));
+  void onRideCreated(String rideId, {int searchDurationMs = 3 * 60 * 1000}) {
+    emit(
+      state.copyWith(
+        rideId: rideId,
+        status: RideStatus.searching,
+        searchDurationMs: searchDurationMs,
+        searchStartedAtMs: DateTime.now().millisecondsSinceEpoch,
+      ),
+    );
     _saveStateToCache();
   }
 
@@ -71,7 +88,7 @@ class ActiveRideCubit extends Cubit<ActiveRideState> {
         emit(
           state.copyWith(rideId: event.rideId, status: RideStatus.searching),
         );
-
+        _saveStateToCache();
       case RideAccepted():
         emit(
           state.copyWith(
@@ -80,15 +97,16 @@ class ActiveRideCubit extends Cubit<ActiveRideState> {
             status: RideStatus.accepted,
           ),
         );
-
+        _saveStateToCache();
       case RouteUpdated():
         emit(state.copyWith(routeUpdate: event.data));
+        _saveStateToCache();
       case DriverLocationUpdated():
         emit(state.copyWith(candidateDrivers: event.data));
-
+        _saveStateToCache();
       case DriverArrived():
         emit(state.copyWith(status: RideStatus.arrived));
-
+        _saveStateToCache();
       case RideStarted():
         emit(
           state.copyWith(
@@ -96,21 +114,21 @@ class ActiveRideCubit extends Cubit<ActiveRideState> {
             progress: RideProgress(fare: 0, distance: 0),
           ),
         );
+        _saveStateToCache();
       case RideCompleted():
-        emit(state.copyWith(status: RideStatus.completed));
         reset();
         ActiveRideCacheService.clearRideState();
+        sl<RideMapCubit>().clearMarkers();
       case NoDriversFound():
-        emit(state.copyWith(status: RideStatus.cancelled));
-
+        reset();
+        ActiveRideCacheService.clearRideState();
       case OnRideProgress():
         emit(state.copyWith(progress: event.data));
-
+        _saveStateToCache();
       case OnDriverLocation():
         emit(state.copyWith(location: event.data));
+        _saveStateToCache();
     }
-
-    _saveStateToCache();
   }
 
   void _saveStateToCache() {

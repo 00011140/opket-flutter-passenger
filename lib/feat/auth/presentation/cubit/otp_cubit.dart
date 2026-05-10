@@ -69,11 +69,18 @@ class OtpCubit extends Cubit<OtpState> {
     }
   }
 
+  void setManualReferralCode(String code) {
+    emit(state.copyWith(manualReferralCode: code.trim().isEmpty ? null : code.trim()));
+  }
+
   void registerUser() async {
     try {
       emit(state.copyWith(loading: true));
 
-      final params = RegisterUserParams(phone: state.phone!);
+      final params = RegisterUserParams(
+        phone: state.phone!,
+        manualReferralCode: state.manualReferralCode,
+      );
       final result = await registerUserUsecase(params);
 
       emit(

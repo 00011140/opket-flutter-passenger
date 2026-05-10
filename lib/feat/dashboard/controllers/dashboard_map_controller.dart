@@ -30,19 +30,11 @@ class GoogleMapsController {
       150,
       150,
     );
-
-    await loadMapStyle();
   }
-
-  void dispose() {}
 
   /// ───────────── Map ─────────────
   void onMapCreated(GoogleMapController controller) {
     mapController = controller;
-  }
-
-  Future<void> loadMapStyle() async {
-    _mapStyle = await rootBundle.loadString('assets/map_style.json');
   }
 
   void setmapStyle(params) {
@@ -52,6 +44,10 @@ class GoogleMapsController {
   }
 
   Future<void> recenterToUser() async {
+    // getCurrentPosition() is intentional here (not getStablePosition).
+    // By the time the user taps "recenter", the GPS is already warm and
+    // returns an accurate fix quickly. Streaming until ≤50 m would add
+    // unnecessary latency to a user-initiated tap.
     final position = await LocationService.getCurrentPosition();
     if (mapController == null || position == null) return;
 

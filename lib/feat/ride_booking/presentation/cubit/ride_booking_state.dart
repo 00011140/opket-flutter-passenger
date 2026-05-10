@@ -9,8 +9,9 @@ class RequestRideLoading extends RideBookingState {}
 
 class RequestRideSuccess extends RideBookingState {
   final String rideId;
+  final int searchDurationMs;
 
-  RequestRideSuccess({required this.rideId});
+  RequestRideSuccess({required this.rideId, required this.searchDurationMs});
 }
 
 class RequestRideError extends RideBookingState {

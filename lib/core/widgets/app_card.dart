@@ -10,6 +10,7 @@ class AppCard extends StatelessWidget {
     this.color,
     this.borderRadius = 24,
     this.onTap,
+    this.border,
     this.boxShadow = true,
     this.disabled = false,
     this.fullHeight = false,
@@ -26,6 +27,7 @@ class AppCard extends StatelessWidget {
   final bool isFull;
   final bool isLoading;
   final bool fullHeight;
+  final BoxBorder? border;
   final void Function()? onTap;
 
   @override
@@ -63,6 +65,7 @@ class AppCard extends StatelessWidget {
                   ],
             color: color ?? Colors.white,
             borderRadius: BorderRadius.all(Radius.circular(borderRadius)),
+            border: border,
           ),
           // child: child,
           child: Material(

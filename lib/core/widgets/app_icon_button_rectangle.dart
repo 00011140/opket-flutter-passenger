@@ -15,7 +15,9 @@ class AppIconButtonRectangle extends StatelessWidget {
   final VoidCallback? onPressed;
   final bool isLoading;
   final Color? backgroundColor;
-  final double borderRadius;
+
+  /// If null, uses size-based radius
+  final double? borderRadius;
 
   /// If provided, overrides the size-based height.
   final double? height;
@@ -35,7 +37,7 @@ class AppIconButtonRectangle extends StatelessWidget {
     required this.onPressed,
     this.isLoading = false,
     this.backgroundColor = AppColors.primary,
-    this.borderRadius = 16,
+    this.borderRadius,
     this.customWidget,
     this.height,
     this.size = AppButtonSize.large,
@@ -67,7 +69,15 @@ class AppIconButtonRectangle extends StatelessWidget {
     AppButtonSize.extraSmall => 3,
     AppButtonSize.small => 6,
     AppButtonSize.medium => 8,
-    AppButtonSize.large => 10, // keep your existing spacing system
+    AppButtonSize.large => 10,
+  };
+
+  // ✅ NEW
+  double _borderRadiusFor(AppButtonSize s) => switch (s) {
+    AppButtonSize.extraSmall => 6,
+    AppButtonSize.small => 10,
+    AppButtonSize.medium => 14,
+    AppButtonSize.large => 16,
   };
 
   double _loaderSizeFor(AppButtonSize s) => switch (s) {
@@ -87,6 +97,8 @@ class AppIconButtonRectangle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final resolvedHeight = height ?? _heightFor(size);
+    final resolvedBorderRadius = borderRadius ?? _borderRadiusFor(size);
+
     final fontSize = _fontFor(size);
     final iconSize = _iconFor(size);
     final gap = _gapFor(size);
@@ -102,17 +114,14 @@ class AppIconButtonRectangle extends StatelessWidget {
         elevation: 0,
         backgroundColor: backgroundColor,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(borderRadius),
+          borderRadius: BorderRadius.circular(resolvedBorderRadius),
         ),
         overlayColor: const Color.fromARGB(10, 0, 0, 0),
-        // ✅ Make wrap mode actually wrap
         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
         minimumSize: isFull
             ? Size(double.infinity, resolvedHeight)
             : Size(0, resolvedHeight),
         fixedSize: isFull ? Size(double.infinity, resolvedHeight) : null,
-
-        // ✅ In wrap mode, give normal horizontal padding
         padding: EdgeInsets.symmetric(horizontal: isFull ? 0 : 28),
       ),
       child: Row(
@@ -145,10 +154,7 @@ class AppIconButtonRectangle extends StatelessWidget {
       child: Stack(
         alignment: Alignment.center,
         children: [
-          // ✅ In full mode, force the button to fill horizontally
           if (isFull) Positioned.fill(child: button) else button,
-
-          // Overlay (animated)
           Positioned.fill(
             child: IgnorePointer(
               ignoring: !isLoading,
@@ -170,7 +176,9 @@ class AppIconButtonRectangle extends StatelessWidget {
                         key: const ValueKey('loading_overlay'),
                         decoration: BoxDecoration(
                           color: Colors.white.withOpacity(0.35),
-                          borderRadius: BorderRadius.circular(borderRadius),
+                          borderRadius: BorderRadius.circular(
+                            resolvedBorderRadius,
+                          ),
                         ),
                         alignment: Alignment.center,
                         child: SizedBox(

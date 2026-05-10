@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:opket/core/services/location_service.dart';
+import 'package:opket/core/services/referral_location_service.dart';
 import 'package:opket/core/widgets/allow_location_dialog.dart';
 import 'package:opket/feat/active_ride/domain/models/route_update.dart';
 import 'package:opket/feat/active_ride/index.dart';
@@ -86,12 +87,19 @@ class RideEffectListener extends StatelessWidget {
             print(state);
             if (state is LocationPermissionGranted) {
               context.read<RideMapCubit>().init();
+              _verifyReferralLocation();
             }
           },
         ),
       ],
       child: SizedBox.shrink(),
     );
+  }
+
+  Future<void> _verifyReferralLocation() async {
+    final position = await LocationService.getCurrentPosition();
+    if (position == null) return;
+    ReferralLocationService.verifyLocation(position.latitude, position.longitude);
   }
 
   void _showLocationDialog(BuildContext context) {
@@ -133,7 +141,8 @@ class RideEffectListener extends StatelessWidget {
   }
 
   void _handleRideComepleted(ActiveRideState state, RideMapCubit mapCubit) {
-    if (state.status == RideStatus.completed) {
+    if (state.status == RideStatus.idle ||
+        state.status == RideStatus.completed) {
       mapCubit.onRideCancelled();
     }
   }

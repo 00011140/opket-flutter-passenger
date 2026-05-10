@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:opket/core/models/driver_location.dart';
 import 'package:opket/core/services/location_service.dart';
@@ -21,6 +24,19 @@ class RideMapCubit extends Cubit<RideMapState> {
   GoogleMapsController get map => _mapController;
   MapPinController get pin => _pinController;
 
+  // Guard: prevents a second init() from running while one is already in
+  // flight. Without this, LocationCubit can emit LocationPermissionGranted
+  // more than once (e.g. on app resume) and each emission would trigger
+  // init(), causing the camera to snap back to the user's GPS location even
+  // after they have dragged the map to a different pickup point.
+  bool _isInitializing = false;
+
+  // Ongoing GPS subscription started after the first stable fix.
+  // Keeps _mapController.currentLocation fresh so that onCameraIdle()'s
+  // "is this the user's location?" distance check stays accurate as the user
+  // moves — without emitting state (no widget rebuilds from GPS ticks).
+  StreamSubscription<Position>? _locationStreamSub;
+
   // ________ START DRIVER LOCATION ________
   DriverLocation? _lastDriverLocation;
 
@@ -32,8 +48,23 @@ class RideMapCubit extends Cubit<RideMapState> {
   // ________ END DRIVER LOCATION ________
 
   Future<void> init() async {
-    final position = await LocationService.getCurrentPosition();
+    // Skip if already initialized or a concurrent init() is running.
+    // isReady guards against re-entry after a successful first init.
+    if (state.isReady || _isInitializing) return;
+    _isInitializing = true;
+
+    // Wait for a stable GPS fix (accuracy ≤ 50 m) before revealing the map.
+    // Using getCurrentPosition() here would return the first OS fix, which on
+    // a cold GPS can be 100–500 m off (cached network/cell tower location).
+    // Streaming and filtering by accuracy prevents the initial camera from
+    // snapping to a wrong spot and then visibly correcting itself.
+    final position = await LocationService.getStablePosition();
+
+    // Load marker assets in parallel with the GPS wait (already started above)
     await _mapController.init();
+
+    _isInitializing = false;
+
     if (position == null) return;
 
     final latLng = LatLng(position.latitude, position.longitude);
@@ -48,6 +79,29 @@ class RideMapCubit extends Cubit<RideMapState> {
         currentLocation: latLng,
         selectedLocation: latLng,
       ),
+    );
+
+    // Begin real-time tracking now that the map is visible.
+    _startLocationTracking();
+  }
+
+  // Subscribes to a filtered GPS stream (accuracy ≤ 50 m, movement ≥ 5 m).
+  // Each update silently refreshes _mapController.currentLocation — the value
+  // used by onCameraIdle() when computing "is map centered on user?".
+  //
+  // We intentionally do NOT emit() here. state.currentLocation is read only
+  // once: to seed initialCameraPosition when the GoogleMap widget is created.
+  // Emitting on every GPS tick would rebuild RideBookingMap every few seconds,
+  // causing unnecessary marker re-renders and BlocBuilder overhead.
+  void _startLocationTracking() {
+    _locationStreamSub?.cancel();
+    _locationStreamSub = LocationService.getAccuratePositionStream().listen(
+      (position) {
+        _mapController.currentLocation = LatLng(
+          position.latitude,
+          position.longitude,
+        );
+      },
     );
   }
 
@@ -248,6 +302,7 @@ class RideMapCubit extends Cubit<RideMapState> {
 
   @override
   Future<void> close() {
+    _locationStreamSub?.cancel();
     driverController.dispose();
     routeController.dispose();
     return super.close();

@@ -73,12 +73,13 @@ class _OtpCodeState extends State<OtpCode> with CodeAutoFill {
   Widget build(BuildContext context) {
     // final phone = context.read<OtpSmsCubit>().phoneNumber;
     return BlocConsumer<OtpCubit, OtpState>(
+      listenWhen: (prev, curr) =>
+          (prev.codeState != OtpCodeState.success && curr.codeState == OtpCodeState.success) ||
+          (prev.step != OtpStep.registered && curr.step == OtpStep.registered),
       listener: (context, state) {
-        final step = state.step;
-        final codeState = state.codeState;
-        if (codeState == OtpCodeState.success && step == OtpStep.codeSent) {
+        if (state.codeState == OtpCodeState.success && state.step == OtpStep.codeSent) {
           context.read<OtpCubit>().registerUser();
-        } else if (step == OtpStep.registered) {
+        } else if (state.step == OtpStep.registered) {
           context.read<AuthCubit>().authenticated();
           Navigator.pop(context);
         }
@@ -133,17 +134,21 @@ class _OtpCodeState extends State<OtpCode> with CodeAutoFill {
               ),
             ),
             const SizedBox(height: 20),
-            Align(
-              alignment: AlignmentGeometry.center,
-              child: AppButton(
-                text: canResend
-                    ? "Kodni qayta olish"
-                    : "${seconds}s dan keyin qayta oling",
-                isLoading: state.loading,
-                enabled: canResend,
-                onPressed: resendCode,
-              ),
-            ),
+            !canResend
+                ? Text(
+                    "${seconds}s dan keyin kodni qayta olishingiz mumkin",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Color(0xFFa1a1a3), fontSize: 20),
+                  )
+                : Align(
+                    alignment: AlignmentGeometry.center,
+                    child: AppButton(
+                      text: "Kodni qayta olish",
+                      isLoading: state.loading,
+                      enabled: canResend,
+                      onPressed: resendCode,
+                    ),
+                  ),
           ],
         );
       },

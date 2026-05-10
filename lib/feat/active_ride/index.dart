@@ -13,6 +13,7 @@ import 'package:opket/core/services/api_client.dart';
 import 'package:opket/core/services/socket_service.dart';
 import 'package:opket/feat/active_ride/domain/models/route_update.dart';
 
+import 'package:opket/feat/ride_booking/presentation/cubit/ride_map_cubit.dart';
 import 'services/active_ride_cache_service.dart';
 part './domain/models/ride_event.dart';
 part './domain/models/ride_progress.dart';

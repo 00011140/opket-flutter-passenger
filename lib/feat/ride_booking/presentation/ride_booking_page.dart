@@ -11,7 +11,7 @@ class _RideBookingPageState extends State<RideBookingPage>
     with TickerProviderStateMixin {
   @override
   void initState() {
-    // ActiveRideCacheService.clearRideState();
+    ActiveRideCacheService.clearRideState();
     context.read<RideMapCubit>().initAnimation(this);
     super.initState();
   }
@@ -49,6 +49,7 @@ class _RideBookingPageState extends State<RideBookingPage>
                 RideEffectListener(),
                 RideBookingListener(),
                 MapPin(),
+                AppUpdateAvailable(),
                 BlocBuilder<ActiveRideCubit, ActiveRideState>(
                   builder: (context, state) {
                     return _AnimatedTopWidget(

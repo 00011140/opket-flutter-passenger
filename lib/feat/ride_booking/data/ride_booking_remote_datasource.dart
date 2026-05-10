@@ -6,8 +6,10 @@ import 'package:opket/feat/ride_booking/domain/usecases/request_ride.dart';
 
 enum RideType { standard, comfort, premium }
 
+typedef RideRequestResult = ({String rideId, int searchDurationMs});
+
 abstract class RideBookingRemoteDatasource {
-  Future<String> requestRide(RequestRideParams params);
+  Future<RideRequestResult> requestRide(RequestRideParams params);
   Future<void> cancelRide(CancelRideParams params);
 }
 
@@ -15,7 +17,7 @@ class RideBookingRemoteDatasourceImpl implements RideBookingRemoteDatasource {
   final api = sl<ApiClient>();
 
   @override
-  Future<String> requestRide(params) async {
+  Future<RideRequestResult> requestRide(params) async {
     final location = params.location;
     final options = params.options;
     final phone = await UserStorage().getPhone();
@@ -31,7 +33,10 @@ class RideBookingRemoteDatasourceImpl implements RideBookingRemoteDatasource {
         "rideType": _rideType(options),
       });
 
-      return response.data['ride_id'];
+      final rideId = response.data['ride_id'] as String;
+      final searchDurationMs =
+          (response.data['searchDurationMs'] as num?)?.toInt() ?? 3 * 60 * 1000;
+      return (rideId: rideId, searchDurationMs: searchDurationMs);
     } catch (e) {
       rethrow;
     }

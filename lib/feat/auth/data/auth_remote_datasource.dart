@@ -77,14 +77,17 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
   @override
   Future<void> registerUser(params) async {
     final phone = params.phone;
-    final referralCode = await ReferralService.getPendingReferral();
+    // Manual code (entered by user) takes priority over QR-based install referrer
+    final referralCode = (params.manualReferralCode != null && params.manualReferralCode!.isNotEmpty)
+        ? params.manualReferralCode
+        : await ReferralService.getPendingReferral();
     final existingPhone = await UserStorage().getPhone();
 
     try {
       final res = await api.post('/user/create', {
         'phone': phone,
         'existingPhone': existingPhone,
-        'referralCode': referralCode ?? "69704d490cb9e2862e64f082",
+        if (referralCode != null && referralCode.isNotEmpty) 'referralCode': referralCode,
       });
       await UserStorage().savePhone(phone);
 

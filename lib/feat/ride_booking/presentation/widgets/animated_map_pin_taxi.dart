@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:opket/core/constants/app_icons.dart';
@@ -25,6 +27,7 @@ class _AnimatedMapPinTaxiState extends State<AnimatedMapPinTaxi>
     with SingleTickerProviderStateMixin {
   late final AnimationController _animationController;
   late final Animation<double> _animation;
+  bool _showTaxiText = true;
 
   @override
   void initState() {
@@ -41,6 +44,14 @@ class _AnimatedMapPinTaxiState extends State<AnimatedMapPinTaxi>
 
     /// Attach animation controls to controller
     widget.controller.attach(onLift: lift, onDrop: drop);
+
+    Timer.periodic(const Duration(seconds: 2), (_) {
+      if (mounted) {
+        setState(() {
+          _showTaxiText = !_showTaxiText;
+        });
+      }
+    });
   }
 
   void lift() => _animationController.forward();
@@ -174,10 +185,18 @@ class _AnimatedMapPinTaxiState extends State<AnimatedMapPinTaxi>
                                         padding: const EdgeInsets.symmetric(
                                           horizontal: AppSpacing.sm,
                                         ),
-                                        child: Text(
-                                          widget.isUserLocation
-                                              ? "Bu siz turgan \njoylashuv"
-                                              : "Siz turgan \njoylashuv emas",
+                                        child: AnimatedSwitcher(
+                                          duration: const Duration(
+                                            milliseconds: 300,
+                                          ),
+                                          child: Text(
+                                            _showTaxiText
+                                                ? "Taxi manashu \nyerga keladi"
+                                                : (widget.isUserLocation
+                                                      ? "Bu siz turgan \njoylashuv"
+                                                      : "Siz turgan \njoylashuv emas"),
+                                            key: ValueKey(_showTaxiText),
+                                          ),
                                         ),
                                       ),
                               ),

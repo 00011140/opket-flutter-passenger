@@ -22,7 +22,7 @@ class RideBookingRepoImpl implements RideBookingRepo {
   }
 
   @override
-  Future<Either<Failure, String>> requestRide(params) async {
+  Future<Either<Failure, RideRequestResult>> requestRide(params) async {
     try {
       final result = await remoteDataSource.requestRide(params);
       return Right(result);
