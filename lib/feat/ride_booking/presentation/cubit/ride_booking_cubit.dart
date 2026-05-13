@@ -32,10 +32,12 @@ class RideBookingCubit extends Cubit<RideBookingState> {
     }
   }
 
-  void cancelRide(String rideId) async {
+  void cancelRide(String rideId, {String? reasonKey}) async {
     try {
       emit(CancelRideLoading());
-      final result = await cancelRideUsecase(CancelRideParams(rideId: rideId));
+      final result = await cancelRideUsecase(
+        CancelRideParams(rideId: rideId, reasonKey: reasonKey),
+      );
 
       emit(
         result.fold(

@@ -16,6 +16,7 @@ class CancelRide extends UseCase<void, CancelRideParams> {
 
 class CancelRideParams {
   final String rideId;
+  final String? reasonKey;
 
-  CancelRideParams({required this.rideId});
+  CancelRideParams({required this.rideId, this.reasonKey});
 }

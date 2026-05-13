@@ -11,31 +11,26 @@ class CancelRideButton extends StatelessWidget {
           text: "Bekor Qilish",
           backgroundColor: Colors.grey.shade200,
           icon: Icons.remove_circle_rounded,
-          onPressed: () => _cancelRideConfirmation(context),
+          onPressed: () => _onPressed(context),
           isLoading: state is CancelRideLoading,
         );
       },
     );
   }
 
-  void _cancelRideConfirmation(BuildContext context) {
-    showDialog<bool>(
-      context: context,
-      builder: (context) {
-        return CancelRideConfirmation(
-          onConfirmed: () {
-            _cancelRide(context);
-          },
-        );
-      },
-    );
-  }
+  /// After the driver has already accepted, the cancellation has a real cost
+  /// for them, so we ask for a reason before submitting. The user can still
+  /// dismiss the sheet (X icon) and the cancel goes through without a reason.
+  Future<void> _onPressed(BuildContext context) async {
+    final result = await showCancelReasonSheet(context);
+    if (result == null || !result.confirmed) return;
+    if (!context.mounted) return;
 
-  void _cancelRide(BuildContext context) {
     final rideId = context.read<ActiveRideCubit>().state.rideId;
+    if (rideId == null) return;
 
-    if (rideId != null) {
-      context.read<RideBookingCubit>().cancelRide(rideId);
-    }
+    context
+        .read<RideBookingCubit>()
+        .cancelRide(rideId, reasonKey: result.reasonKey);
   }
 }

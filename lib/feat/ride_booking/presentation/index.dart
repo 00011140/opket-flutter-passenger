@@ -59,6 +59,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'cubit/location_confirmation_cubit.dart';
 import 'widgets/car_plate.dart';
 import 'widgets/get_current_ride_listener.dart';
+import 'widgets/cancel_reason_sheet.dart';
 
 part 'ride_booking_page.dart';
 part './widgets/location_confirmation.dart';

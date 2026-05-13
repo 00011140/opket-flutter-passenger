@@ -45,7 +45,11 @@ class RideBookingRemoteDatasourceImpl implements RideBookingRemoteDatasource {
   @override
   Future<void> cancelRide(params) async {
     try {
-      await api.post('/user/cancel-ride', {'rideId': params.rideId});
+      final body = <String, dynamic>{'rideId': params.rideId};
+      if (params.reasonKey != null && params.reasonKey!.isNotEmpty) {
+        body['reasonKey'] = params.reasonKey;
+      }
+      await api.post('/user/cancel-ride', body);
     } catch (e) {
       rethrow;
     }
