@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:math' as math;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -24,6 +26,7 @@ import 'package:opket/feat/active_ride/index.dart';
 import 'package:opket/feat/active_ride/services/active_ride_cache_service.dart';
 import 'package:opket/feat/auth/presentation/cubit/auth_cubit.dart';
 import 'package:opket/feat/dashboard/controllers/map_pin_controller.dart';
+import 'package:opket/feat/food/widgets/food_categories.dart';
 import 'package:opket/feat/food/dashboard_food_button.dart';
 import 'package:opket/feat/ride_booking/presentation/cubit/ride_validation_cubit.dart';
 import 'package:opket/feat/ride_booking/presentation/widgets/animated_map_pin_taxi.dart';

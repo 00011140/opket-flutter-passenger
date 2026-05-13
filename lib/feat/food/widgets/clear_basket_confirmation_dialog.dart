@@ -44,7 +44,7 @@ class ClearBasketConfirmationDialog extends StatelessWidget {
                     onPressed: () {
                       Navigator.pop(context);
                       context.read<CartCubit>().clear();
-                      Navigator.pop(context);
+                      // Navigator.pop(context);
                     },
                     // onPressed: _requestNotificationPermission,
                     backgroundColor: const Color(0xFFFFE711),

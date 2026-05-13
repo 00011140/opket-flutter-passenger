@@ -11,15 +11,19 @@ class FoodCategoriesCubit extends Cubit<FoodCategoriesState> {
   Future<void> loadData() async {
     try {
       final dataCashed = await FoodCategoryCache.load();
-      if (dataCashed.isNotEmpty) {
+
+      print("CATEGORIES CACHED:");
+      print(dataCashed);
+      if (dataCashed.isEmpty) {
+        emit(FoodCategoriesLoading());
+      } else {
         emit(FoodCategoriesLoaded(dataCashed));
       }
-      if (dataCashed.isEmpty) emit(FoodCategoriesLoading());
 
       final data = await FoodService().getCategories();
       emit(FoodCategoriesLoaded(data));
     } catch (e) {
-      emit(FoodCategoriesError(e.toString()));
+      // emit(FoodCategoriesError(e.toString()));
     }
   }
 

@@ -7,6 +7,7 @@ class RideOption {
   final bool instant;
   final double charge;
   final int sortOrder;
+  final bool showInPassengerApp;
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
@@ -19,6 +20,7 @@ class RideOption {
     this.instant = false,
     required this.charge,
     this.sortOrder = 0,
+    this.showInPassengerApp = true,
     this.createdAt,
     this.updatedAt,
   });
@@ -33,6 +35,7 @@ class RideOption {
       instant: json['instant'] ?? false,
       charge: (json['charge'] as num).toDouble(),
       sortOrder: (json['sort_order'] as num?)?.toInt() ?? 0,
+      showInPassengerApp: json['show_in_passenger_app'] ?? true,
       createdAt: json['createdAt'] != null
           ? DateTime.parse(json['createdAt'])
           : null,
@@ -52,6 +55,7 @@ class RideOption {
       'instant': instant,
       'charge': charge,
       'sort_order': sortOrder,
+      'show_in_passenger_app': showInPassengerApp,
       'createdAt': createdAt?.toIso8601String(),
       'updatedAt': updatedAt?.toIso8601String(),
     };
@@ -66,6 +70,7 @@ class RideOption {
     bool? instant,
     double? charge,
     int? sortOrder,
+    bool? showInPassengerApp,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -78,6 +83,7 @@ class RideOption {
       instant: instant ?? this.instant,
       charge: charge ?? this.charge,
       sortOrder: sortOrder ?? this.sortOrder,
+      showInPassengerApp: showInPassengerApp ?? this.showInPassengerApp,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );

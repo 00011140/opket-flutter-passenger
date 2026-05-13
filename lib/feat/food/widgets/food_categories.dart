@@ -7,7 +7,18 @@ import 'package:opket/feat/food/models/food_category_model.dart';
 import 'package:shimmer/shimmer.dart';
 
 class FoodCategories extends StatefulWidget {
-  const FoodCategories({super.key});
+  final String? initialCategoryId;
+  final void Function(FoodCategoryModel)? onCategoryTap;
+  final double imageSize;
+  final double separatorWidth;
+
+  const FoodCategories({
+    super.key,
+    this.initialCategoryId,
+    this.onCategoryTap,
+    this.imageSize = 55,
+    this.separatorWidth = 10,
+  });
 
   @override
   State<FoodCategories> createState() => _FoodCategoriesState();
@@ -19,6 +30,7 @@ class _FoodCategoriesState extends State<FoodCategories> {
 
   @override
   void initState() {
+    selectedId = widget.initialCategoryId;
     context.read<FoodCategoriesCubit>().loadData();
     super.initState();
   }
@@ -27,32 +39,44 @@ class _FoodCategoriesState extends State<FoodCategories> {
   Widget build(BuildContext context) {
     return BlocConsumer<FoodCategoriesCubit, FoodCategoriesState>(
       builder: (context, state) {
-        if (state is FoodCategoriesLoading || state is FoodCategoriesError) {
+        print("FoodCategoriesCubit");
+        print(state);
+        if (state is FoodCategoriesLoading) {
           return FoodCategoriesShimmer();
         }
-        return ListView.separated(
-          physics: BouncingScrollPhysics(),
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          scrollDirection: Axis.horizontal,
-          itemCount: categories.length,
-          separatorBuilder: (_, __) => const SizedBox(width: 10),
-          itemBuilder: (context, i) => _CategoryBubble(
-            item: categories[i],
-            isSelected: selectedId == categories[i].id,
-            onTap: () {
-              setState(() {
-                if (selectedId == categories[i].id) {
-                  selectedId = null;
-                  context.read<RestaurantsCubit>().setQuery('');
-                } else {
-                  selectedId = categories[i].id;
-                  context.read<RestaurantsCubit>().setQuery(categories[i].name);
+        if (state is FoodCategoriesLoaded) {
+          return ListView.separated(
+            physics: BouncingScrollPhysics(),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            scrollDirection: Axis.horizontal,
+            itemCount: categories.length,
+            separatorBuilder: (_, __) => SizedBox(width: widget.separatorWidth),
+            itemBuilder: (context, i) => _CategoryBubble(
+              item: categories[i],
+              isSelected: selectedId == categories[i].id,
+              imageSize: widget.imageSize,
+              onTap: () {
+                if (widget.onCategoryTap != null) {
+                  widget.onCategoryTap!(categories[i]);
+                  return;
                 }
-              });
-              FocusManager.instance.primaryFocus?.unfocus();
-            },
-          ),
-        );
+                setState(() {
+                  if (selectedId == categories[i].id) {
+                    selectedId = null;
+                    context.read<RestaurantsCubit>().setQuery('');
+                  } else {
+                    selectedId = categories[i].id;
+                    context.read<RestaurantsCubit>().setQuery(
+                      categories[i].name,
+                    );
+                  }
+                });
+                FocusManager.instance.primaryFocus?.unfocus();
+              },
+            ),
+          );
+        }
+        return SizedBox.shrink();
       },
       listener: (context, state) {
         if (state is FoodCategoriesError) {
@@ -62,6 +86,9 @@ class _FoodCategoriesState extends State<FoodCategories> {
         } else if (state is FoodCategoriesLoaded) {
           setState(() {
             categories = state.data;
+            if (widget.initialCategoryId != null && selectedId == null) {
+              selectedId = widget.initialCategoryId;
+            }
           });
         }
       },
@@ -73,11 +100,13 @@ class _CategoryBubble extends StatefulWidget {
   final FoodCategoryModel item;
   final bool isSelected;
   final VoidCallback onTap;
+  final double imageSize;
 
   const _CategoryBubble({
     required this.item,
     required this.isSelected,
     required this.onTap,
+    required this.imageSize,
   });
 
   @override
@@ -135,40 +164,39 @@ class _CategoryBubbleState extends State<_CategoryBubble>
         onTap: _bounceTap,
         onTapDown: (_) => _ctrl.forward(),
         onTapCancel: () => _ctrl.reverse(),
-        child: Container(
-          width: 60,
-          // clipBehavior: Clip.hardEdge,
+        child: SizedBox(
+          width: widget.imageSize + 5,
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Ink needs a Material ancestor to render ripple
               ScaleTransition(
                 scale: _scale,
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 180),
                   curve: Curves.easeOut,
                   clipBehavior: Clip.none,
-                  width: 55,
-                  height: 55,
+                  width: widget.imageSize,
+                  height: widget.imageSize,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(16),
-                    color: bg, // selected background tint
+                    color: bg,
                   ),
                   child: CachedNetworkImage(
                     imageUrl: widget.item.imageUrl,
                     fit: BoxFit.contain,
-                    width: 55,
-                    height: 55,
+                    width: widget.imageSize,
+                    height: widget.imageSize,
                   ),
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 6),
               Text(
                 widget.item.name,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   fontSize: 12,
-                  fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight.w600,
                   color: widget.isSelected ? Colors.orange : null,
                 ),
               ),

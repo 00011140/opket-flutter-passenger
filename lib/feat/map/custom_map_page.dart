@@ -18,9 +18,13 @@ import 'package:opket/feat/dashboard/widgets/turnon_notification_dialog.dart';
 import 'package:opket/feat/food/cubit/cart_cubit.dart';
 import 'package:opket/feat/food/cubit/current_restaurant_cubit.dart';
 import 'package:opket/feat/food/cubit/delivery_fee_cubit.dart';
+import 'package:opket/app/router/route_names.dart';
 import 'package:opket/feat/food/cubit/order_food_cubit.dart';
 import 'package:opket/feat/food/models/delivery_fee_request_body.dart';
 import 'package:opket/feat/food/widgets/menu_basket.dart';
+import 'package:opket/feat/food/widgets/order_food_success.dart';
+import 'package:opket/feat/myorders/models/food_order.dart';
+import 'package:opket/feat/myorders/services/order_local_storage.dart';
 import 'package:opket/core/services/location_service.dart';
 import 'package:opket/core/utils/distaneInMeters.dart';
 
@@ -55,9 +59,7 @@ class _CustomMapPageState extends State<CustomMapPage> {
     _pinController = MapPinController();
     _map = GoogleMapsController();
     // context.read<LocationConfirmationCubit>().setData(map: _map);
-    _map.init();
-
-    _getCurrentLocation();
+    _map.init().then((_) => _getCurrentLocation());
   }
 
   @override
@@ -69,164 +71,182 @@ class _CustomMapPageState extends State<CustomMapPage> {
   /// ───────────── Location ─────────────
   Future<void> _getCurrentLocation() async {
     try {
-      // Wait for a stable GPS fix before showing the map.
-      // A coarse first fix (cell tower / cached position) would cause the map
-      // to appear centered on the wrong spot and then jump once GPS settles —
-      // poor UX, especially for delivery address selection.
-      final position = await LocationService.getStablePosition();
+      // Phase 1: show the map immediately using the OS-cached last-known
+      // position (returns in < 100 ms, no GPS wait required).
+      final lastKnown = await Geolocator.getLastKnownPosition();
+      if (mounted && lastKnown != null) {
+        final latLng = LatLng(lastKnown.latitude, lastKnown.longitude);
+        _map.currentLocation = latLng;
+        _map.selectedLocation = latLng;
+        setState(() => _isLoading = false);
+      }
 
-      // Guard: widget may have been disposed during the GPS wait (up to 15 s)
+      // Phase 2: refine with a stable GPS fix in the background.
+      Position? position = await LocationService.getStablePosition();
+      position ??= await LocationService.getCurrentPosition();
+
       if (!mounted || position == null) return;
 
       final latLng = LatLng(position.latitude, position.longitude);
-
       _map.currentLocation = latLng;
       _map.selectedLocation = latLng;
 
-      setState(() {
-        _isLoading = false;
-      });
-      // No explicit moveCamera() needed: the GoogleMap widget is only
-      // created when _isLoading becomes false, and its initialCameraPosition
-      // is already set to _map.currentLocation. animateCamera() would require
-      // the controller to be ready (set in onMapCreated), which hasn't fired
-      // yet at this point, so the call would silently no-op anyway.
+      if (_isLoading) {
+        // No last-known was available; show the map now.
+        setState(() => _isLoading = false);
+      } else {
+        // Map is already visible; animate to the refined position.
+        await _map.moveCamera(latLng);
+      }
 
-      // Begin tracking so _map.currentLocation stays current as the user
-      // moves. The stream only fires when accuracy ≤ 50 m and movement ≥ 5 m,
-      // keeping battery usage low.
       _startLocationTracking();
     } catch (e) {}
   }
 
   void _startLocationTracking() {
     _locationStreamSub?.cancel();
-    _locationStreamSub = LocationService.getAccuratePositionStream().listen(
-      (position) {
-        if (!mounted) {
-          _locationStreamSub?.cancel();
-          return;
-        }
-        // Update reference point used by _onCameraIdle() distance check.
-        // No setState — currentLocation is read lazily when camera idles,
-        // so there is no UI update needed here.
-        _map.currentLocation = LatLng(
-          position.latitude,
-          position.longitude,
-        );
-      },
-    );
+    _locationStreamSub = LocationService.getAccuratePositionStream().listen((
+      position,
+    ) {
+      if (!mounted) {
+        _locationStreamSub?.cancel();
+        return;
+      }
+      // Update reference point used by _onCameraIdle() distance check.
+      // No setState — currentLocation is read lazily when camera idles,
+      // so there is no UI update needed here.
+      _map.currentLocation = LatLng(position.latitude, position.longitude);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      onPopInvokedWithResult: (didPop, result) {
-        if (didPop) {
-          context.read<DeliveryFeeCubit>().reset();
+    return BlocListener<OrderFoodCubit, OrderFoodState>(
+      listener: (context, state) {
+        print("🤪🤪🤪🤪");
+        print(state);
+        if (state is OrderFoodSuccess) {
+          OrderLocalStorage.saveOrder(state.order);
+          Navigator.of(
+            context,
+          ).pushNamedAndRemoveUntil(RouteNames.dashboard, (route) => false);
+          Navigator.of(context).pushNamed(RouteNames.myordersActive);
+          _showOrderFoodSuccessDialog(context);
+        } else if (state is OrderFoodError) {
+          print(state.message);
         }
       },
-      child: AnnotatedRegion(
-        value: const SystemUiOverlayStyle(
-          statusBarColor: Colors.transparent,
-          statusBarIconBrightness: Brightness.dark,
-          systemNavigationBarColor: Colors.white,
-          systemStatusBarContrastEnforced: false,
-          systemNavigationBarIconBrightness: Brightness.dark,
-        ),
-        child: Scaffold(
-          extendBody: true,
-          appBar: AppBar(
-            leading: CustomBackButton(),
-            title: Text(
-              "Yetkazish manzilini tanlang",
-              style: TextStyle(fontSize: 20),
-            ),
+      child: PopScope(
+        onPopInvokedWithResult: (didPop, result) {
+          if (didPop) {
+            context.read<DeliveryFeeCubit>().reset();
+          }
+        },
+        child: AnnotatedRegion(
+          value: const SystemUiOverlayStyle(
+            statusBarColor: Colors.transparent,
+            statusBarIconBrightness: Brightness.dark,
+            systemNavigationBarColor: Colors.white,
+            systemStatusBarContrastEnforced: false,
+            systemNavigationBarIconBrightness: Brightness.dark,
           ),
-          body: SafeArea(
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                const MapGridLoader(),
+          child: Scaffold(
+            extendBody: true,
+            appBar: AppBar(
+              leading: CustomBackButton(),
+              title: Text(
+                "Yetkazish manzilini tanlang",
+                style: TextStyle(fontSize: 20),
+              ),
+            ),
+            body: SafeArea(
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  const MapGridLoader(),
 
-                if (!_isLoading)
-                  GoogleMap(
-                    compassEnabled: false,
-                    mapType: MapType.normal,
-                    initialCameraPosition: CameraPosition(
-                      target: _map.currentLocation!,
-                      zoom: 16.5,
+                  if (!_isLoading)
+                    GoogleMap(
+                      compassEnabled: false,
+                      mapType: MapType.normal,
+                      initialCameraPosition: CameraPosition(
+                        target: _map.currentLocation!,
+                        zoom: 16.5,
+                      ),
+                      markers: {
+                        if (_map.driverMarker != null) _map.driverMarker!,
+                        if (_map.selectedLocationMarker != null)
+                          _map.selectedLocationMarker!,
+                      },
+                      myLocationEnabled: true,
+                      myLocationButtonEnabled: false,
+                      zoomControlsEnabled: false,
+                      onMapCreated: _map.onMapCreated,
+                      onCameraMove: (p) {
+                        _map.updateSelectedLocation(p.target);
+                        // context.read<SelectedLocationCubit>().setData(p.target);
+                      },
+                      onCameraMoveStarted: () {
+                        _pinController.lift();
+                        setState(() {
+                          _isPinLoading = true;
+                        });
+                      },
+                      onCameraIdle: () async {
+                        _pinController.drop();
+
+                        setState(() {
+                          _isPinLoading = true;
+                        });
+
+                        _onCameraIdle(); // make it async
+
+                        setState(() {
+                          _isPinLoading = false;
+                        });
+                      },
                     ),
-                    markers: {
-                      if (_map.driverMarker != null) _map.driverMarker!,
-                      if (_map.selectedLocationMarker != null)
-                        _map.selectedLocationMarker!,
-                    },
-                    myLocationEnabled: true,
-                    myLocationButtonEnabled: false,
-                    zoomControlsEnabled: false,
-                    onMapCreated: _map.onMapCreated,
-                    onCameraMove: (p) {
-                      _map.updateSelectedLocation(p.target);
-                      // context.read<SelectedLocationCubit>().setData(p.target);
-                    },
-                    onCameraMoveStarted: () {
-                      _pinController.lift();
-                      setState(() {
-                        _isPinLoading = true;
-                      });
-                    },
-                    onCameraIdle: () async {
-                      _pinController.drop();
+                  Transform.translate(
+                    offset: const Offset(0, -40), // 🔥 tweak this value
 
-                      setState(() {
-                        _isPinLoading = true;
-                      });
-
-                      _onCameraIdle(); // make it async
-
-                      setState(() {
-                        _isPinLoading = false;
-                      });
-                    },
+                    child: AnimatedMapPin(
+                      controller: _pinController,
+                      isLoading: _isLoading || _isPinLoading,
+                    ),
                   ),
-                Transform.translate(
-                  offset: const Offset(0, -40), // 🔥 tweak this value
 
-                  child: AnimatedMapPin(
-                    controller: _pinController,
-                    isLoading: _isLoading || _isPinLoading,
-                  ),
-                ),
-
-                Positioned(
-                  bottom: 0,
-                  right: 0,
-                  left: 0,
-                  child: Column(
-                    children: [
-                      Align(
-                        alignment: AlignmentGeometry.centerRight,
-                        child: AppContainer(
-                          child: RecenterButton(onTap: onRecenter),
+                  Positioned(
+                    bottom: 0,
+                    right: 0,
+                    left: 0,
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: AlignmentGeometry.centerRight,
+                          child: AppContainer(
+                            child: RecenterButton(onTap: onRecenter),
+                          ),
                         ),
-                      ),
-                      SizedBox(height: AppSpacing.md),
-                      MenuBasket(
-                        ctx: context,
-                        bottom: 0,
-                        onTap: _orderFood,
-                        buttonTitle: "Tasdiqlash",
-                      ),
-                    ],
+                        SizedBox(height: AppSpacing.md),
+                        MenuBasket(
+                          bottom: 0,
+                          onTap: _orderFood,
+                          buttonTitle: "Tasdiqlash",
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
       ),
     );
+  }
+
+  void _showOrderFoodSuccessDialog(BuildContext context) {
+    showDialog(context: context, builder: (_) => OrderFoodSuccessDialog());
   }
 
   void _orderFood() async {
@@ -244,8 +264,18 @@ class _CustomMapPageState extends State<CustomMapPage> {
       return;
     }
 
-    final cartState = context.read<CartCubit>().state;
-    context.read<OrderFoodCubit>().orderFood(cartState);
+    final feeState = context.read<DeliveryFeeCubit>().state;
+    final fee = feeState is DeliveryFeeLoaded ? feeState.data : null;
+    final cartState = context.read<CartCubit>().state.copyWith(
+      deliveryFee: fee,
+    );
+    final location = _map.selectedLocation!;
+
+    context.read<OrderFoodCubit>().orderFood(
+      cartState,
+      location.latitude,
+      location.longitude,
+    );
   }
 
   void _onCameraIdle() {
@@ -269,7 +299,10 @@ class _CustomMapPageState extends State<CustomMapPage> {
     final origin = _map.selectedLocation;
     final destination = restaurant.location;
 
-    if (origin == null || destination == null) return;
+    if (origin == null ||
+        destination == null ||
+        destination.lat == 0 && destination.lng == 0)
+      return;
 
     final cart = context.read<CartCubit>().state;
 
@@ -277,6 +310,7 @@ class _CustomMapPageState extends State<CustomMapPage> {
       origin: Location(lat: origin.latitude, lng: origin.longitude),
       destination: Location(lat: destination.lat, lng: destination.lng),
       subtotal: cart.subtotal,
+      freeOverAmount: restaurant.delivery.freeOverAmount,
     );
 
     context.read<DeliveryFeeCubit>().calculateDeliveryFee(requestBody);

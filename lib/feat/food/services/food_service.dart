@@ -1,4 +1,3 @@
-import 'package:geolocator/geolocator.dart';
 import 'package:opket/core/admin_env.dart';
 import 'package:opket/core/di/sl.dart';
 import 'package:opket/feat/food/cubit/cart_state.dart';
@@ -90,17 +89,15 @@ class FoodService {
     }
   }
 
-  Future<FoodOrder> orderfood(CartState data) async {
+  Future<FoodOrder> orderfood(CartState data, double lat, double lng) async {
     try {
-      final position = await Geolocator.getCurrentPosition();
-
       final response = await client.post(
         "/food/order-food",
         data: {
           ...data.toCreateOrderJson(),
           "dropoff": {
-            'latitude': position.latitude,
-            'longitude': position.longitude,
+            'latitude': lat,
+            'longitude': lng,
           },
         },
       );

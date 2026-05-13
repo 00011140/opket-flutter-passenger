@@ -122,7 +122,10 @@ class LatLon {
   LatLon({required this.lat, required this.lon});
 
   factory LatLon.fromJson(Map<String, dynamic> json) {
-    return LatLon(lat: json['lat'].toDouble(), lon: json['lon'].toDouble());
+    return LatLon(
+      lat: (json['lat'] as num?)?.toDouble() ?? 0.0,
+      lon: (json['lon'] as num?)?.toDouble() ?? 0.0,
+    );
   }
 
   Map<String, dynamic> toJson() {

@@ -18,7 +18,11 @@ class AppRouter {
       case RouteNames.dashboard:
         return MaterialPageRoute(builder: (_) => const DashboardNew());
       case RouteNames.food:
-        return _createAnimatedRoute(RestaurantsPage());
+        final args = arguments as Map<String, String?>?;
+        return _createAnimatedRoute(RestaurantsPage(
+          initialCategoryId: args?['categoryId'],
+          initialCategoryName: args?['categoryName'],
+        ));
       case RouteNames.profile:
         return _createAnimatedRoute(ProfilePage());
       case RouteNames.termsAndConditions:

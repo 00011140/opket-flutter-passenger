@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:http/http.dart';
+import 'package:opket/core/widgets/custom_back_button.dart';
+import 'package:opket/feat/food/cubit/cart_cubit.dart';
+import 'package:opket/feat/food/widgets/clear_basket_confirmation_dialog.dart';
 
 class RestaurantMenuAppbar extends StatelessWidget {
   const RestaurantMenuAppbar({super.key, required this.name});
@@ -11,11 +16,17 @@ class RestaurantMenuAppbar extends StatelessWidget {
       color: Colors.white,
       child: Row(
         children: [
-          IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () {
-              Navigator.pop(context);
-            },
+          CustomBackButton(
+            onPressed: !context.read<CartCubit>().state.isEmpty
+                ? () {
+                    showDialog<bool>(
+                      context: context,
+                      builder: (context) {
+                        return ClearBasketConfirmationDialog();
+                      },
+                    );
+                  }
+                : null,
           ),
           Expanded(
             child: Center(

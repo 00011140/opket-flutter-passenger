@@ -20,7 +20,6 @@ class _RideBookingPageState extends State<RideBookingPage>
   Widget build(BuildContext context) {
     return MultiBlocListener(
       listeners: [
-        BlocListener<AuthCubit, AuthState>(listener: _listenAuthCubit),
         BlocListener<ConnectivityCubit, bool>(
           listener: _listenConnectivityCubit,
         ),
@@ -54,7 +53,8 @@ class _RideBookingPageState extends State<RideBookingPage>
                   builder: (context, state) {
                     return _AnimatedTopWidget(
                       visible: state.status == RideStatus.idle,
-                      child: FoodLogo(),
+                      // child: FoodSection(),
+                      child: AppbarLogo(),
                     );
                   },
                 ),
@@ -73,14 +73,6 @@ class _RideBookingPageState extends State<RideBookingPage>
       ToastService.hide();
     }
   }
-
-  void _listenAuthCubit(BuildContext c, AuthState state) {
-    if (state is UnAuthenticated) {
-      Future.delayed(const Duration(seconds: 1), () async {
-        showAppModelBottomSheet(context, const AuthPage());
-      });
-    }
-  }
 }
 
 class _AnimatedTopWidget extends StatelessWidget {
@@ -96,8 +88,9 @@ class _AnimatedTopWidget extends StatelessWidget {
     return AnimatedPositioned(
       duration: const Duration(milliseconds: 400),
       curve: Curves.easeOutCubic,
-      top: visible ? topPadding : -100, // slide up when hidden
-
+      top: visible ? topPadding : -260, // slide up when hidden
+      // left: 0,
+      // right: 0,
       child: AnimatedOpacity(
         duration: const Duration(milliseconds: 300),
         opacity: visible ? 1 : 0,

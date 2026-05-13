@@ -17,7 +17,10 @@ class RideOptionsRemoteDatasourceImpl implements RideOptionsRemoteDatasource {
     try {
       final response = await client.get("/ride-options/");
       final List rawList = response.data;
-      final data = rawList.map((e) => RideOption.fromJson(e)).toList();
+      final data = rawList
+          .map((e) => RideOption.fromJson(e))
+          .where((o) => o.showInPassengerApp)
+          .toList();
 
       await cacheService.saveData(data);
       return data;

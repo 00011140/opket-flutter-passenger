@@ -18,6 +18,25 @@ class DashboardNew extends StatefulWidget {
 }
 
 class _DashboardNewState extends State<DashboardNew> {
+  bool _authSheetShown = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      if (context.read<AuthCubit>().state is UnAuthenticated) {
+        _showAuthSheet();
+      }
+    });
+  }
+
+  void _showAuthSheet() {
+    if (_authSheetShown || !mounted) return;
+    _authSheetShown = true;
+    showAppModelBottomSheet(context, const AuthPage());
+  }
+
   @override
   Widget build(BuildContext context) {
     return MultiBlocListener(
@@ -60,10 +79,12 @@ class _DashboardNewState extends State<DashboardNew> {
   }
 
   void _listenAuthCubit(BuildContext c, AuthState state) {
-    if (state is UnAuthenticated) {
-      Future.delayed(const Duration(seconds: 1), () async {
-        showAppModelBottomSheet(context, const AuthPage());
-      });
+    print("🥰🥰🥰🥰");
+    print(state);
+    if (state is Authenticated) {
+      _authSheetShown = false;
+    } else if (state is UnAuthenticated) {
+      _showAuthSheet();
     }
   }
 }

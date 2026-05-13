@@ -22,12 +22,12 @@ class AppbarLogo extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(AppIconsV2.app_logo, size: 30),
+              const Icon(AppIconsV2.app_logo, size: 28),
               const SizedBox(width: AppSpacing.sm_md),
               Text(
                 "OPKET",
                 style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                  fontSize: 22,
+                  fontSize: 24,
                   fontWeight: FontWeight.w600,
                 ),
               ),

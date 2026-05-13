@@ -37,8 +37,6 @@ class _RestaurantsSliverState extends State<RestaurantsSliver> {
           final cuisines = state.cuisines;
           final query = state.query;
 
-          print(cuisines);
-
           if (restaurants.isEmpty) {
             // If searching, better empty message
             if (query.isNotEmpty) {

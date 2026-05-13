@@ -160,6 +160,31 @@ class _ProductShimmerCard extends StatelessWidget {
   }
 }
 
+class CategoryHeaderShimmerSliver extends StatelessWidget {
+  const CategoryHeaderShimmerSliver({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return SliverToBoxAdapter(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
+        child: Shimmer.fromColors(
+          baseColor: Colors.grey.shade100,
+          highlightColor: Colors.white,
+          child: Container(
+            height: 22,
+            width: 120,
+            decoration: BoxDecoration(
+              color: Colors.grey.shade200,
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class CategorySectionSliver {
   static List<Widget> buildSlivers({
     required CategoryModel category,

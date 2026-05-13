@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:opket/app/app_providers.dart';
 import 'package:opket/core/theme/theme.dart';
-import 'package:opket/feat/dashboard/dashboard_new.dart';
 import 'package:opket/app/router/app_router.dart';
-import 'package:opket/feat/ride_booking/presentation/index.dart';
+import 'package:opket/feat/dashboard/dashboard_new.dart';
 
 final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
     GlobalKey<ScaffoldMessengerState>();
@@ -21,7 +20,7 @@ class MyApp extends StatelessWidget {
         scaffoldMessengerKey: scaffoldMessengerKey,
         debugShowCheckedModeBanner: false,
         theme: appLightTheme,
-        home: RideBookingPage(),
+        home: const DashboardNew(),
         onGenerateRoute: AppRouter.generateRoute,
       ),
     );

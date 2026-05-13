@@ -86,34 +86,38 @@ class _RideBookingSearchingState extends State<RideBookingSearching> {
       padding: EdgeInsetsGeometry.symmetric(horizontal: AppSpacing.lg),
       child: AppCard(
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Shimmer.fromColors(
-                      baseColor: Colors.black,
-                      highlightColor: Colors.white,
-                      child: Text(
-                        widget.candidateDrivers.isEmpty
-                            ? "Haydovchi qidiryapmiz"
-                            : "${widget.candidateDrivers.length} ta haydovchi topildi",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Shimmer.fromColors(
+                        baseColor: Colors.black,
+                        highlightColor: Colors.white,
+                        child: Text(
+                          widget.candidateDrivers.isEmpty
+                              ? "Haydovchi qidiryapmiz"
+                              : "${widget.candidateDrivers.length} ta haydovchi topildi",
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
-                    ),
-                    Text(
-                      textAlign: TextAlign.start,
-                      "iltimos vaqt tugaguncha kutib turing",
-                      style: TextStyle(),
-                    ),
-                  ],
+                      Text(
+                        textAlign: TextAlign.start,
+                        widget.candidateDrivers.isEmpty
+                            ? "Iltimos vaqt tugaguncha kutib turing"
+                            : "Haydovchilarga taklif yuborilmoqda",
+                      ),
+                    ],
+                  ),
                 ),
                 SizedBox(width: AppSpacing.sm),
                 Container(

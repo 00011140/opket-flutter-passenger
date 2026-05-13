@@ -21,7 +21,7 @@ class _EmptyContainerState extends State<EmptyContainer> {
     Scaffold.of(context).showBottomSheet(
       elevation: 20.0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      (_) => MenuBasket(ctx: context, onTap: () {}, buttonTitle: ""),
+      (_) => MenuBasket(onTap: () {}, buttonTitle: ""),
       backgroundColor: Colors.white,
     );
   }

@@ -48,6 +48,7 @@ class GeneralApiService {
     try {
       await api.post("${Env.baseUrl}/user/delete-account", {"phone": phone});
       await UserStorage().deletePhone();
+      await sl<AuthStorage>().clear();
     } catch (e) {
       rethrow;
     }

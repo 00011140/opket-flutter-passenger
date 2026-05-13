@@ -10,7 +10,14 @@ import 'package:opket/feat/food/widgets/restaurants.dart';
 import 'package:opket/feat/myorders/widgets/active_orders_carousel.dart';
 
 class RestaurantsPage extends StatefulWidget {
-  const RestaurantsPage({super.key});
+  final String? initialCategoryId;
+  final String? initialCategoryName;
+
+  const RestaurantsPage({
+    super.key,
+    this.initialCategoryId,
+    this.initialCategoryName,
+  });
 
   @override
   State<RestaurantsPage> createState() => _RestaurantsPageState();
@@ -20,6 +27,9 @@ class _RestaurantsPageState extends State<RestaurantsPage> {
   @override
   void initState() {
     super.initState();
+    if (widget.initialCategoryName != null) {
+      context.read<RestaurantsCubit>().setQuery(widget.initialCategoryName!);
+    }
   }
 
   @override
@@ -70,7 +80,11 @@ class _RestaurantsPageState extends State<RestaurantsPage> {
                   //     ],
                   //   ),
                   // ),
-                  Expanded(child: RestaurantsContent()),
+                  Expanded(
+                    child: RestaurantsContent(
+                      initialCategoryId: widget.initialCategoryId,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -82,7 +96,9 @@ class _RestaurantsPageState extends State<RestaurantsPage> {
 }
 
 class RestaurantsContent extends StatelessWidget {
-  const RestaurantsContent({super.key});
+  final String? initialCategoryId;
+
+  const RestaurantsContent({super.key, this.initialCategoryId});
 
   @override
   Widget build(BuildContext context) {
@@ -100,7 +116,11 @@ class RestaurantsContent extends StatelessWidget {
         SliverToBoxAdapter(
           child: SizedBox(
             height: 80,
-            child: Stack(children: [FoodCategories()]),
+            child: Stack(
+              children: [
+                FoodCategories(initialCategoryId: initialCategoryId),
+              ],
+            ),
           ),
         ),
         const SliverToBoxAdapter(child: SizedBox(height: AppSpacing.md)),

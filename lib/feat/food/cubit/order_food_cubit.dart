@@ -9,10 +9,10 @@ part 'order_food_state.dart';
 class OrderFoodCubit extends Cubit<OrderFoodState> {
   OrderFoodCubit() : super(OrderFoodInitial());
 
-  Future<void> orderFood(CartState state) async {
+  Future<void> orderFood(CartState state, double lat, double lng) async {
     try {
       emit(OrderFoodLoading());
-      final order = await FoodService().orderfood(state);
+      final order = await FoodService().orderfood(state, lat, lng);
       emit(OrderFoodSuccess(order: order));
     } catch (e) {
       emit(OrderFoodError(e.toString()));

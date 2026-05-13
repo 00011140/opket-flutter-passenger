@@ -1,5 +1,75 @@
 part of '../index.dart';
 
+class FoodSection extends StatelessWidget {
+  const FoodSection({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      clipBehavior: Clip.hardEdge,
+      margin: EdgeInsets.all(20),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.all(Radius.circular(24)),
+        boxShadow: [
+          BoxShadow(blurRadius: 15, color: Color.fromARGB(16, 0, 0, 0)),
+        ],
+      ),
+      child: Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
+            child: SizedBox(
+              height: 75,
+              child: FoodCategories(
+                imageSize: 45,
+                separatorWidth: 18,
+                onCategoryTap: (cat) => Navigator.pushNamed(
+                  context,
+                  RouteNames.food,
+                  arguments: {'categoryId': cat.id, 'categoryName': cat.name},
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            right: 0,
+            top: 0,
+            bottom: 0,
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: () => Navigator.pushNamed(context, RouteNames.food),
+                child: Ink(
+                  padding: EdgeInsets.symmetric(horizontal: AppSpacing.md),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.centerLeft,
+                      end: Alignment.centerRight,
+                      colors: [
+                        Colors.white.withValues(alpha: 0.2),
+                        Colors.white.withValues(alpha: 0.5),
+                        Colors.white.withValues(alpha: 0.7),
+                        Colors.white.withValues(alpha: 0.8),
+                        Colors.white.withValues(alpha: 0.9),
+                        Colors.white,
+                      ],
+                    ),
+                  ),
+                  child: Transform.rotate(
+                    angle: math.pi,
+                    child: Icon(AppIcons.chevronLeft),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class FoodLogo extends StatelessWidget {
   const FoodLogo({super.key});
 

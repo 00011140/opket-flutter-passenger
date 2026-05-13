@@ -18,10 +18,12 @@ class ActiveRideCacheService {
     final jsonString = prefs.getString(_rideStateKey);
 
     if (jsonString == null) return null;
-    print(" 📤 📤 📤 📤 📤 📤 📤 📤 📤 📤 📤 📤");
-    print(jsonString);
     final Map<String, dynamic> map = json.decode(jsonString);
-    return ActiveRideState.fromMap(map);
+    final state = ActiveRideState.fromMap(map);
+    // A state without a rideId has nothing to restore — it was saved before
+    // the ride was created (e.g. from setPickupLocation) and is useless.
+    if (state.rideId == null) return null;
+    return state;
   }
 
   /// Clear CurrentRideState

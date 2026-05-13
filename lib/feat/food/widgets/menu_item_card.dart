@@ -4,10 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:opket/feat/food/cubit/cart_cubit.dart';
 import 'package:opket/feat/food/cubit/cart_state.dart';
 import 'package:opket/feat/food/models/menu_item_model.dart';
-import 'package:opket/feat/food/widgets/menu_basket.dart';
 import 'package:opket/feat/food/widgets/menu_item_price.dart';
 import 'package:opket/feat/food/widgets/product_quantity_control.dart';
-import 'package:opket/app/router/route_names.dart';
 
 class ProductCard extends StatelessWidget {
   final MenuItemModel product;
@@ -83,32 +81,11 @@ class ProductCard extends StatelessWidget {
     context.read<CartCubit>().decrement(product.id);
   }
 
-  void onPlus(BuildContext context, int qty) async {
-    final items = context.read<CartCubit>().state.items;
-    if (items.isEmpty) _showBasketSheet(context);
-
+  void onPlus(BuildContext context, int qty) {
     if (qty == 0) {
       context.read<CartCubit>().addItem(product, quantity: 1);
     } else {
       context.read<CartCubit>().increment(product.id);
     }
-  }
-
-  void _showBasketSheet(BuildContext context) {
-    Scaffold.of(context).showBottomSheet(
-      elevation: 20.0,
-      shape: RoundedRectangleBorder(
-        side: BorderSide(color: Colors.grey.shade200),
-        // borderRadius: BorderRadius.circular(20),
-      ),
-      (_) => MenuBasket(
-        ctx: context,
-        buttonTitle: "Buyurtma qilish",
-        onTap: () {
-          Navigator.pushNamed(context, RouteNames.orderFoodMap);
-        },
-      ),
-      backgroundColor: Colors.white,
-    );
   }
 }

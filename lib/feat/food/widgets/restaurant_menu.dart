@@ -88,7 +88,20 @@ class _RestaurantMenuState extends State<RestaurantMenu>
         },
         builder: (context, state) {
           if (state is RestaurantCategoriesLoading) {
-            return const Center(child: RestaurantCategoriesShimmer());
+            return CustomScrollView(
+              slivers: [
+                SliverToBoxAdapter(
+                  child: SizedBox(
+                    height: 48,
+                    child: const RestaurantCategoriesShimmer(),
+                  ),
+                ),
+                for (int i = 0; i < 2; i++) ...[
+                  const CategoryHeaderShimmerSliver(),
+                  const CategoryItemsShimmerSliver(),
+                ],
+              ],
+            );
           }
 
           if (_tabController == null || _categories.isEmpty) {
