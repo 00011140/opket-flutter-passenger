@@ -17,4 +17,12 @@ class ReportCacheService {
   Future<void> saveLastReportedVersion(String current) async {
     await prefs.setString(_lastReportedKey, current);
   }
+
+  bool? getLastReportedNotification() {
+    return prefs.getBool(_lastReportedNotificationKey);
+  }
+
+  Future<void> saveLastReportedNotification(bool value) async {
+    await prefs.setBool(_lastReportedNotificationKey, value);
+  }
 }

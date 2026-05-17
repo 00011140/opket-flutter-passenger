@@ -19,6 +19,11 @@ class RequestRide extends UseCase<RideRequestResult, RequestRideParams> {
 class RequestRideParams {
   final LatLng location;
   final List<String> options;
+  final bool useBalance;
 
-  RequestRideParams({required this.location, required this.options});
+  RequestRideParams({
+    required this.location,
+    required this.options,
+    this.useBalance = false,
+  });
 }

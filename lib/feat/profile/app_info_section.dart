@@ -4,7 +4,7 @@ import 'package:opket/feat/my_rides/driver_rides_widget.dart';
 import 'package:opket/feat/profile/custom_card.dart';
 import 'package:opket/feat/profile/delete_account_confirmation.dart';
 import 'package:opket/app/router/route_names.dart';
-import 'package:opket/core/services/app_report_service.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'separator.dart';
@@ -24,7 +24,8 @@ class _AppInfoSectionState extends State<AppInfoSection> {
   @override
   void initState() {
     Future.delayed(Duration.zero, () async {
-      final result = await AppVersionReportService.getAppVersion();
+      final info = await PackageInfo.fromPlatform();
+      final result = info.version;
 
       setState(() {
         appVersion = result;
@@ -45,24 +46,9 @@ class _AppInfoSectionState extends State<AppInfoSection> {
           child: Column(
             children: [
               SingleSettingContainer(
-                onTap: () {
-                  _openTelegram();
-                },
-                icondata: Icons.support_agent_outlined,
-                title: "Qo'llab quvvatlash",
-              ),
-              Separator(),
-              SingleSettingContainer(
-                icondata: Icons.numbers,
-                title: "Ilova versiyasi",
-                rightContent: Text(
-                  appVersion,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.normal,
-                    color: Colors.grey.shade400,
-                  ),
-                ),
+                onTap: _navigate,
+                icondata: Icons.text_rotation_angleup_rounded,
+                title: "Safarlarim",
               ),
               Separator(),
               SingleSettingContainer(
@@ -79,10 +65,26 @@ class _AppInfoSectionState extends State<AppInfoSection> {
                 title: "Foydalanish shartlari",
               ),
               Separator(),
+
               SingleSettingContainer(
-                onTap: _navigate,
-                icondata: Icons.text_rotation_angleup_rounded,
-                title: "Safarlarim",
+                onTap: () {
+                  _openTelegram();
+                },
+                icondata: Icons.support_agent_outlined,
+                title: "Qo'llab quvvatlash",
+              ),
+              Separator(),
+              SingleSettingContainer(
+                icondata: Icons.numbers,
+                title: "Ilova versiyasi",
+                rightContent: Text(
+                  appVersion,
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.normal,
+                    color: Colors.grey.shade400,
+                  ),
+                ),
               ),
               if (widget.phone != null) Separator(),
               if (widget.phone != null)

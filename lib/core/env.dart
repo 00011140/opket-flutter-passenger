@@ -6,7 +6,7 @@ class Env {
   }
 
   static const _baseUrls = {
-    Environment.dev: "http://192.168.1.106:3000",
+    Environment.dev: "http://192.168.1.104:3000",
     Environment.prod: "https://opketme.uz/api",
   };
 

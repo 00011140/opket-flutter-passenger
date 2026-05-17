@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:opket/core/widgets/app_card.dart';
 import 'package:opket/core/widgets/app_icon_button_rectangle.dart';
 import 'package:opket/core/theme/spacing.dart';
-import 'package:opket/feat/profile/cubit/delete_account_cubit.dart';
+import 'package:opket/feat/auth/presentation/cubit/auth_cubit.dart';
 
 class DeleteAccountConfirmationDialog extends StatefulWidget {
   const DeleteAccountConfirmationDialog({super.key});
@@ -36,7 +36,7 @@ class _DeleteAccountConfirmationDialogState
             ),
             SizedBox(height: AppSpacing.sm),
             const Text(
-              "Sizga aloqador bo'lgan barcha ma'lumotlar (Safarlizngiz taxiri, tranzaksiyalar vhkz) o'chirib tashlanadi, keyinchalik buni tiklashning iloji yo'q",
+              "Hisobingizdan chiqasiz. Bonuslaringiz, referral kodingiz va boshqa ma'lumotlaringiz saqlanib qoladi.",
               style: TextStyle(
                 fontFamily: 'WorkSans',
                 fontSize: 16,
@@ -64,8 +64,8 @@ class _DeleteAccountConfirmationDialogState
                   child: AppIconButtonRectangle(
                     text: "HA",
                     onPressed: () {
-                      context.read<DeleteAccountCubit>().deleteAccount();
                       Navigator.pop(context);
+                      context.read<AuthCubit>().logout();
                     },
                     backgroundColor: const Color(0xFFFFE711),
                     textColor: Colors.black,

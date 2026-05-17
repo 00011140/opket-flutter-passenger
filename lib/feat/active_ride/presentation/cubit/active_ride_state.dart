@@ -15,9 +15,10 @@ enum RideStatus {
     // normalize (optional but safer)
     final normalized = value.toLowerCase();
 
-    // custom rule
+    // custom rule — map unknown/terminal statuses to idle, except completed
+    // which triggers the ride summary sheet
     if (normalized == 'completed') {
-      return RideStatus.idle;
+      return RideStatus.completed;
     }
 
     return RideStatus.values.firstWhere(
@@ -38,6 +39,7 @@ class ActiveRideState extends Equatable {
   final RouteUpdate? routeUpdate;
   final int searchDurationMs;
   final int? searchStartedAtMs; // epoch ms when search started
+  final bool useBalance;
 
   const ActiveRideState({
     this.rideId,
@@ -50,6 +52,7 @@ class ActiveRideState extends Equatable {
     this.candidateDrivers,
     this.searchDurationMs = 3 * 60 * 1000,
     this.searchStartedAtMs,
+    this.useBalance = false,
   });
 
   ActiveRideState copyWith({
@@ -63,6 +66,7 @@ class ActiveRideState extends Equatable {
     List<DriverLocation>? candidateDrivers,
     int? searchDurationMs,
     int? searchStartedAtMs,
+    bool? useBalance,
   }) {
     return ActiveRideState(
       routeUpdate: routeUpdate ?? this.routeUpdate,
@@ -75,6 +79,7 @@ class ActiveRideState extends Equatable {
       candidateDrivers: candidateDrivers ?? this.candidateDrivers,
       searchDurationMs: searchDurationMs ?? this.searchDurationMs,
       searchStartedAtMs: searchStartedAtMs ?? this.searchStartedAtMs,
+      useBalance: useBalance ?? this.useBalance,
     );
   }
 
@@ -96,6 +101,7 @@ class ActiveRideState extends Equatable {
       'progress': progress.toJson(),
       'searchDurationMs': searchDurationMs,
       'searchStartedAtMs': searchStartedAtMs,
+      'useBalance': useBalance,
       'pickupLocation': pickupLocation != null
           ? {
               'latitude': pickupLocation!.latitude,
@@ -119,6 +125,7 @@ class ActiveRideState extends Equatable {
           : null,
       searchDurationMs: (map['searchDurationMs'] as num?)?.toInt() ?? 3 * 60 * 1000,
       searchStartedAtMs: (map['searchStartedAtMs'] as num?)?.toInt(),
+      useBalance: map['useBalance'] as bool? ?? false,
       pickupLocation: map['pickupLocation'] != null
           ? LatLng(
               map['pickupLocation']['latitude'],
@@ -140,5 +147,6 @@ class ActiveRideState extends Equatable {
     candidateDrivers,
     searchDurationMs,
     searchStartedAtMs,
+    useBalance,
   ];
 }

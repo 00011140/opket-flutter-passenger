@@ -8,7 +8,7 @@ class ReferralLocationService {
     if (_verified) return;
     _verified = true;
     try {
-      await sl<ApiClient>().post('/user/referral/verify-location', {'lat': lat, 'lng': lng});
+      await sl<ApiClient>().post('/user/referral/submit-location', {'lat': lat, 'lng': lng});
     } catch (_) {
       _verified = false; // allow retry on failure
     }

@@ -35,7 +35,7 @@ class SingleSettingContainer extends StatelessWidget {
           Row(
             children: [
               Center(child: Icon(icondata, size: 28, color: iconColor)),
-              SizedBox(width: AppSpacing.md),
+              SizedBox(width: AppSpacing.sm_md),
               Text(title, style: TextStyle(fontSize: 18, color: titleColor)),
             ],
           ),

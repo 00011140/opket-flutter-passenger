@@ -45,6 +45,9 @@ class RideMapCubit extends Cubit<RideMapState> {
 
   VoidCallback? _driverAnimListener;
   VoidCallback? _routeAnimListener;
+
+  List<LatLng> _fullRoute = [];
+  int _trimIndex = 0;
   // ________ END DRIVER LOCATION ________
 
   Future<void> init() async {
@@ -241,7 +244,10 @@ class RideMapCubit extends Cubit<RideMapState> {
       final userMarker = map.updateUserMarker(pickupLocation);
 
       if (driverMarker != null && userMarker != null) {
-        emit(state.copyWith(markers: {driverMarker, userMarker}));
+        emit(state.copyWith(
+          markers: {driverMarker, userMarker},
+          animatedRoute: _trimmedRouteForDriver(animatedPos),
+        ));
       }
     };
 
@@ -261,6 +267,9 @@ class RideMapCubit extends Cubit<RideMapState> {
   }
 
   void startAnimation(List<LatLng> route) {
+    _fullRoute = route;
+    _trimIndex = 0;
+
     routeController.stop();
     routeController.reset();
 
@@ -295,7 +304,36 @@ class RideMapCubit extends Cubit<RideMapState> {
     }
   }
 
+  // Returns the route trimmed up to the closest point ahead of _trimIndex,
+  // or null if the driver hasn't advanced to the next point yet.
+  List<LatLng>? _trimmedRouteForDriver(LatLng driverPos) {
+    if (_fullRoute.isEmpty || _trimIndex >= _fullRoute.length) return null;
+
+    int best = _trimIndex;
+    double bestDist = _approxDistSq(driverPos, _fullRoute[_trimIndex]);
+
+    for (int i = _trimIndex + 1; i < _fullRoute.length; i++) {
+      final d = _approxDistSq(driverPos, _fullRoute[i]);
+      if (d < bestDist) {
+        bestDist = d;
+        best = i;
+      }
+    }
+
+    if (best <= _trimIndex) return null;
+    _trimIndex = best;
+    return _fullRoute.sublist(_trimIndex);
+  }
+
+  double _approxDistSq(LatLng a, LatLng b) {
+    final dlat = a.latitude - b.latitude;
+    final dlng = a.longitude - b.longitude;
+    return dlat * dlat + dlng * dlng;
+  }
+
   void onRideCancelled() {
+    _fullRoute = [];
+    _trimIndex = 0;
     emit(state.copyWith(mapEnabled: true, markers: {}, animatedRoute: []));
     recenter();
   }

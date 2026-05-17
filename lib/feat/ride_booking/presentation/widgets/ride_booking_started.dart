@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:opket/core/constants/app_icons_v3.dart';
 import 'package:opket/core/services/discount_config_service.dart';
+import 'package:opket/core/theme/colors.dart';
 import 'package:opket/core/theme/spacing.dart';
 import 'package:opket/core/utils/extensions.dart';
 import 'package:opket/core/widgets/app_card.dart';
 import 'package:opket/feat/active_ride/index.dart';
+import 'package:opket/feat/balance/cubit/balance_cubit.dart';
 
 class RideBookingStarted extends StatefulWidget {
   const RideBookingStarted({super.key});
@@ -37,40 +39,55 @@ class _RideBookingStartedState extends State<RideBookingStarted> {
 
         final fare = progress?.fare ?? 0;
 
-        return Row(
-          children: [
-            Expanded(
-              child: AppCard(
-                padding: const EdgeInsets.symmetric(
-                  vertical: AppSpacing.md,
-                  horizontal: AppSpacing.md,
+        return BlocBuilder<BalanceCubit, BalanceState>(
+          builder: (context, balanceState) {
+            final balance = balanceState is BalanceSuccess
+                ? balanceState.balance
+                : 0;
+            final useBalance = state.useBalance;
+            return Row(
+              children: [
+                Expanded(
+                  child: AppCard(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: AppSpacing.md,
+                      horizontal: AppSpacing.md,
+                    ),
+                    borderRadius: 18,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Icon(AppIconsV3.mmoneyIcon, size: 40),
+                        Flexible(
+                          child: _FareText(
+                            fare: fare,
+                            discount: _discount,
+                            balance: useBalance ? balance : 0,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-                borderRadius: 18,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Icon(AppIconsV3.mmoneyIcon, size: 40),
-                    Flexible(child: _FareText(fare: fare, discount: _discount)),
-                  ],
+                SizedBox(width: AppSpacing.sm),
+                AppCard(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: AppSpacing.md,
+                    horizontal: AppSpacing.md,
+                  ),
+                  borderRadius: 18,
+                  child: Text(
+                    "${progress?.distance.toStringAsFixed(2)} km",
+                    style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                      color: Colors.grey,
+                      fontSize: 24,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
                 ),
-              ),
-            ),
-            SizedBox(width: AppSpacing.sm),
-            AppCard(
-              padding: const EdgeInsets.symmetric(
-                vertical: AppSpacing.md,
-                horizontal: AppSpacing.md,
-              ),
-              borderRadius: 18,
-              child: Text(
-                "${progress?.distance.toStringAsFixed(2)} km",
-                style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                  color: Colors.grey,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-          ],
+              ],
+            );
+          },
         );
       },
     );
@@ -80,42 +97,49 @@ class _RideBookingStartedState extends State<RideBookingStarted> {
 class _FareText extends StatelessWidget {
   final int fare;
   final DiscountConfig discount;
-  const _FareText({required this.fare, required this.discount});
+  final int balance;
+
+  const _FareText({
+    required this.fare,
+    required this.discount,
+    this.balance = 0,
+  });
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final hasDiscount = discount.appliesTo(fare);
+    final baseFare = hasDiscount ? discount.discountedFare(fare) : fare;
+    final displayFare = (baseFare - balance).clamp(0, baseFare);
+    final balanceApplied = balance > 0 && balance <= baseFare;
 
-    if (!hasDiscount) {
-      return Text(
-        "${fare.formatWithThousands()} so'm",
-        textAlign: TextAlign.end,
-        style: textTheme.displaySmall?.copyWith(fontWeight: FontWeight.w500),
-      );
-    }
-
-    final discountedFare = discount.discountedFare(fare);
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.end,
+    return Stack(
+      clipBehavior: Clip.none,
+      // mainAxisSize: MainAxisSize.min,
+      // crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        Text(
-          "${fare.formatWithThousands()} so'm",
-          style: textTheme.titleMedium?.copyWith(
-            color: Colors.grey.shade400,
-            fontWeight: FontWeight.w500,
-            decoration: TextDecoration.lineThrough,
-            decorationColor: Colors.grey.shade400,
-            decorationThickness: 2,
+        if (hasDiscount || balanceApplied)
+          Positioned(
+            top: -15,
+            right: 0,
+            child: Text(
+              "${fare.formatWithThousands()} so'm",
+              style: textTheme.titleMedium?.copyWith(
+                color: Colors.grey.shade400,
+                fontWeight: FontWeight.w500,
+                decoration: TextDecoration.lineThrough,
+                decorationColor: Colors.grey.shade400,
+                decorationThickness: 2,
+              ),
+            ),
           ),
-        ),
-        const SizedBox(height: 2),
         Text(
-          "${discountedFare.formatWithThousands()} so'm",
+          "${displayFare.formatWithThousands()} so'm",
+          textAlign: TextAlign.end,
           style: textTheme.displaySmall?.copyWith(
-            color: Colors.white,
-            fontWeight: FontWeight.w600,
+            color: (hasDiscount || balanceApplied) ? Colors.black : null,
+            fontWeight: FontWeight.w500,
+            fontSize: 24,
           ),
         ),
       ],

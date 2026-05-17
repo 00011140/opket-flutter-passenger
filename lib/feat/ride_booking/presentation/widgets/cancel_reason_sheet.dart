@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:opket/core/services/cancel_reasons_service.dart';
+import 'package:opket/core/theme/colors.dart';
 import 'package:opket/core/theme/spacing.dart';
+import 'package:opket/core/widgets/app_button_rectangle.dart';
+import 'package:opket/core/widgets/app_icon_button_rectangle.dart';
 
 /// Bottom sheet that asks the passenger why they are cancelling. Designed to
 /// match the reference in `opket-mini-app/public/screentshots/reason.jpg`.
@@ -44,58 +47,39 @@ class _CancelReasonSheetState extends State<_CancelReasonSheet> {
   }
 
   void _save() {
-    Navigator.of(context).pop(
-      CancelReasonSheetResult(confirmed: true, reasonKey: _selectedKey),
-    );
+    Navigator.of(
+      context,
+    ).pop(CancelReasonSheetResult(confirmed: true, reasonKey: _selectedKey));
   }
 
   void _skip() {
-    Navigator.of(context).pop(
-      const CancelReasonSheetResult(confirmed: true, reasonKey: null),
-    );
+    Navigator.of(
+      context,
+    ).pop(const CancelReasonSheetResult(confirmed: true, reasonKey: null));
   }
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    return SafeArea(
-      child: Container(
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-        ),
-        padding: EdgeInsets.only(
-          left: AppSpacing.lg,
-          right: AppSpacing.lg,
-          top: AppSpacing.md,
-          bottom: AppSpacing.lg,
-        ),
+    return Container(
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      padding: EdgeInsets.only(
+        left: AppSpacing.lg,
+        right: AppSpacing.lg,
+        top: AppSpacing.lg,
+        // bottom: AppSpacing.lg,
+      ),
+      child: SafeArea(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                Container(
-                  width: 40,
-                  height: 5,
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade300,
-                    borderRadius: BorderRadius.circular(3),
-                  ),
-                ),
-                const Spacer(),
-                IconButton(
-                  icon: const Icon(Icons.close, color: Colors.grey),
-                  onPressed: _skip,
-                  splashRadius: 18,
-                ),
-              ],
-            ),
-            const SizedBox(height: 4),
             Text(
               "Nima uchun buyurtmani bekor qilmoqchisiz?",
-              style: textTheme.headlineSmall?.copyWith(
+              style: textTheme.headlineMedium?.copyWith(
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -106,7 +90,12 @@ class _CancelReasonSheetState extends State<_CancelReasonSheet> {
                 if (snapshot.connectionState != ConnectionState.done) {
                   return const Padding(
                     padding: EdgeInsets.symmetric(vertical: 32),
-                    child: Center(child: CircularProgressIndicator()),
+                    child: Center(
+                      child: CircularProgressIndicator(
+                        color: Colors.grey,
+                        strokeWidth: 1,
+                      ),
+                    ),
                   );
                 }
                 final reasons = snapshot.data ?? const <CancelReason>[];
@@ -135,24 +124,11 @@ class _CancelReasonSheetState extends State<_CancelReasonSheet> {
               },
             ),
             const SizedBox(height: 16),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFFFC400),
-                  foregroundColor: Colors.black,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(32),
-                  ),
-                  elevation: 0,
-                ),
-                onPressed: _save,
-                child: const Text(
-                  "Saqlash",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
-                ),
-              ),
+            AppIconButtonRectangle(
+              text: "Saqlash",
+              onPressed: _save,
+              textColor: Colors.black,
+              backgroundColor: const Color(0xFFFFE711),
             ),
           ],
         ),
@@ -215,10 +191,10 @@ class _RadioDot extends StatelessWidget {
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         border: Border.all(
-          color: selected ? const Color(0xFFFFC400) : Colors.grey.shade300,
+          color: selected ? AppColors.primary : Colors.grey.shade300,
           width: 2,
         ),
-        color: selected ? const Color(0xFFFFC400) : Colors.transparent,
+        color: selected ? AppColors.primary : Colors.transparent,
       ),
       child: selected
           ? const Icon(Icons.check, size: 14, color: Colors.black)

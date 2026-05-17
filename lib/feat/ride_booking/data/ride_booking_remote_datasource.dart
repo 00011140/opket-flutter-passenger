@@ -31,6 +31,7 @@ class RideBookingRemoteDatasourceImpl implements RideBookingRemoteDatasource {
         'phone': phone,
         "options": options,
         "rideType": _rideType(options),
+        "useBalance": params.useBalance,
       });
 
       final rideId = response.data['ride_id'] as String;

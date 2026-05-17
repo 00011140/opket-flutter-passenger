@@ -11,6 +11,7 @@ import 'package:opket/core/models/driver_location.dart';
 import 'package:opket/core/models/driver_model.dart';
 import 'package:opket/core/models/ride_model.dart';
 import 'package:opket/core/services/api_client.dart';
+import 'package:opket/core/services/audio_service.dart';
 import 'package:opket/core/services/socket_service.dart';
 import 'package:opket/feat/active_ride/domain/models/route_update.dart';
 

@@ -23,6 +23,7 @@ import 'package:opket/feat/food/cubit/restaurants_cubit.dart';
 import 'package:opket/feat/myorders/cubit/active_orders_cubit.dart';
 import 'package:opket/feat/myorders/cubit/get_active_orders_cubit.dart';
 import 'package:opket/feat/profile/cubit/delete_account_cubit.dart';
+import 'package:opket/feat/profile/cubit/referral_code_cubit.dart';
 import 'package:opket/feat/active_ride/presentation/cubit/driver_location_cubit.dart';
 import 'package:opket/feat/ride_booking/presentation/cubit/location_confirmation_cubit.dart';
 import 'package:opket/feat/ride_booking/presentation/cubit/ride_booking_cubit.dart';
@@ -57,6 +58,7 @@ class AppProviders extends StatelessWidget {
         BlocProvider(create: (_) => CartCubit()),
         BlocProvider(create: (_) => CurrentRestaurantCubit()),
         BlocProvider(create: (_) => DeleteAccountCubit()),
+        BlocProvider(create: (_) => ReferralCodeCubit()),
         BlocProvider(create: (_) => BalanceCubit()),
         BlocProvider(create: (_) => PayFareCubit()),
         BlocProvider(create: (_) => ContactCubit()),

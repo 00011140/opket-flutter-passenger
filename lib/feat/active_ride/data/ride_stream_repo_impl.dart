@@ -66,4 +66,14 @@ class RideStreamRepositoryImpl implements RideStreamRepository {
       return Left(GeneralFailure(e.toString()));
     }
   }
+
+  @override
+  Future<void> setUseBalance({required String rideId, required bool useBalance}) {
+    return remoteDatasource.setUseBalance(rideId: rideId, useBalance: useBalance);
+  }
+
+  @override
+  Future<void> rateRide({required String rideId, required int rating, String? comment}) {
+    return remoteDatasource.rateRide(rideId: rideId, rating: rating, comment: comment);
+  }
 }

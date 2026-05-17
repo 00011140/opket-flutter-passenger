@@ -16,6 +16,26 @@ class RideBookingSheetIdle extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
+                AppIconButtonCircle(
+                  icon: AppIconsV3.mmoneyIcon,
+                  iconSize: 26,
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (dialogContext) => MultiBlocProvider(
+                        providers: [
+                          BlocProvider.value(
+                            value: context.read<BalanceCubit>(),
+                          ),
+                          BlocProvider.value(
+                            value: context.read<ActiveRideCubit>(),
+                          ),
+                        ],
+                        child: const BalanceInfoDialog(),
+                      ),
+                    );
+                  },
+                ),
                 SizedBox(width: AppSpacing.sm),
                 RecenterButton(onTap: onRecenter),
               ],

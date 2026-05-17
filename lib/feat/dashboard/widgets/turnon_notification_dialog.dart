@@ -1,8 +1,10 @@
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
+import 'package:opket/core/di/sl.dart';
 import 'package:opket/core/widgets/app_card.dart';
 import 'package:opket/core/widgets/app_icon_button_rectangle.dart';
 import 'package:opket/core/theme/spacing.dart';
+import 'package:opket/feat/report/index.dart';
 
 class TurnonNotificationDialog extends StatefulWidget {
   const TurnonNotificationDialog({super.key, this.description});
@@ -59,6 +61,7 @@ class _TurnonNotificationDialogState extends State<TurnonNotificationDialog>
     try {
       final allowed = await AwesomeNotifications().isNotificationAllowed();
       if (allowed) {
+        sl<ReportAppInfo>()(null);
         await _closeDialogOnce(true);
       }
     } finally {
@@ -105,7 +108,7 @@ class _TurnonNotificationDialogState extends State<TurnonNotificationDialog>
                 SizedBox(height: AppSpacing.sm),
                 Text(
                   widget.description ??
-                      "Haydovchi yo‘l haqqini sun’iy oshirganda, darhol xabar olish uchun bildirishnomani yoqing!",
+                      "Sizga muhim xabarlar yubora olishmiz uchun, iltimos bildirishnomaga ruxsat bering!",
                   style: TextStyle(
                     fontFamily: 'WorkSans',
                     fontSize: 16,

@@ -15,29 +15,23 @@ class ReportRemoteDatasourceImpl implements ReportRemoteDatasource {
 
   @override
   Future<void> report() async {
-    try {
-      final appVersion = await _appVersion();
-      final notificationEnabled = await AwesomeNotifications()
-          .isNotificationAllowed();
-
-      await client.post(
-        "/user/report",
-        Report(
-          notificationEnabled: notificationEnabled,
-          appVersion: appVersion,
-        ).toMap(),
-      );
-
-      await cacheService.saveLastReportedVersion(appVersion);
-    } catch (e) {
-      rethrow;
-    }
-  }
-
-  Future<String> _appVersion() async {
     final info = await PackageInfo.fromPlatform();
-    final current = '${info.version}+${info.buildNumber}';
+    final appVersion = '${info.version}+${info.buildNumber}';
+    final notificationEnabled = await AwesomeNotifications().isNotificationAllowed();
 
-    return current;
+    final lastVersion = await cacheService.getLastReportedVersion();
+    final lastNotification = cacheService.getLastReportedNotification();
+
+    if (lastVersion == appVersion && lastNotification == notificationEnabled) return;
+
+    await client.post(
+      '/user/report',
+      Report(notificationEnabled: notificationEnabled, appVersion: appVersion).toMap(),
+    );
+
+    await Future.wait([
+      cacheService.saveLastReportedVersion(appVersion),
+      cacheService.saveLastReportedNotification(notificationEnabled),
+    ]);
   }
 }

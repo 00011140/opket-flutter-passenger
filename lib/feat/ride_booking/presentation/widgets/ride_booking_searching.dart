@@ -115,6 +115,7 @@ class _RideBookingSearchingState extends State<RideBookingSearching> {
                         widget.candidateDrivers.isEmpty
                             ? "Iltimos vaqt tugaguncha kutib turing"
                             : "Haydovchilarga taklif yuborilmoqda",
+                        style: TextStyle(color: Colors.grey),
                       ),
                     ],
                   ),
@@ -139,41 +140,12 @@ class _RideBookingSearchingState extends State<RideBookingSearching> {
               ],
             ),
             SizedBox(height: AppSpacing.md),
-            BlocBuilder<RideBookingCubit, RideBookingState>(
-              builder: (context, state) {
-                return AppIconButtonRectangle(
-                  onPressed: () => _cancelRideConfirmation(context),
-                  backgroundColor: Colors.grey.shade200,
-                  icon: Icons.remove_circle_rounded,
-                  size: AppButtonSize.medium,
-                  text: "Bekor qilish",
-                  isLoading: state is CancelRideLoading,
-                );
-              },
-            ),
+            const UseBalanceSwitch(),
+            SizedBox(height: AppSpacing.md),
+            const CancelRideButton(),
           ],
         ),
       ),
     );
-  }
-
-  void _cancelRideConfirmation(BuildContext context) {
-    showDialog<bool>(
-      context: context,
-      builder: (context) {
-        return CancelRideConfirmation(
-          onConfirmed: () {
-            _cancelRide(context);
-          },
-        );
-      },
-    );
-  }
-
-  void _cancelRide(BuildContext context) {
-    final rideId = context.read<ActiveRideCubit>().state.rideId;
-    if (rideId != null) {
-      context.read<RideBookingCubit>().cancelRide(rideId);
-    }
   }
 }

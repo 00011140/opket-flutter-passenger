@@ -53,6 +53,8 @@ class _RideBookingAcceptedState extends State<RideBookingAccepted> {
                 const SizedBox(height: AppSpacing.md),
                 CarPlate(carNumber: widget.driver.carNumber),
                 const SizedBox(height: AppSpacing.md),
+                const UseBalanceSwitch(),
+                const SizedBox(height: AppSpacing.md),
                 CancelRideButton(),
               ],
             ),

@@ -34,6 +34,7 @@ class SocketService {
   final _featureFlagsCtlr = StreamController<dynamic>.broadcast();
   final _candidateDriversCtlr = StreamController<dynamic>.broadcast();
   final _rideProgressCtrl = StreamController<dynamic>.broadcast();
+  final _forceLogoutCtrl = StreamController<dynamic>.broadcast();
 
   Stream<dynamic> get onRouteUpdated => _routeUpdateController.stream;
   Stream<dynamic> get onRideProgress => _rideProgressCtrl.stream;
@@ -51,6 +52,7 @@ class SocketService {
   Stream<dynamic> get onBalanceTopUp => _balanceTopUpController.stream;
   Stream<dynamic> get onNoPremiumDrivers => _noPremiumDriversController.stream;
   Stream<dynamic> get onFeatureFlags => _featureFlagsCtlr.stream;
+  Stream<dynamic> get onForceLogout => _forceLogoutCtrl.stream;
 
   /// Initialize and connect socket with driver JWT token
   void connect(String token) {
@@ -180,6 +182,10 @@ class SocketService {
     _socket?.on('feature_flags', (data) {
       print("💁💁💁 object");
       _featureFlagsCtlr.add(data);
+    });
+
+    _socket?.on('force_logout', (_) {
+      _forceLogoutCtrl.add(null);
     });
   }
 

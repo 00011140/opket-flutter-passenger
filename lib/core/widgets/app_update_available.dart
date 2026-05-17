@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:opket/core/models/update_info.dart';
 import 'package:opket/core/services/app_update_service.dart';
 import 'package:opket/core/theme/spacing.dart';
 import 'package:opket/core/widgets/app_card.dart';
@@ -12,8 +13,6 @@ class AppUpdateAvailable extends StatefulWidget {
 }
 
 class _AppUpdateAvailableState extends State<AppUpdateAvailable> {
-  bool _updateAvailable = false;
-  bool _isUpdating = false;
 
   @override
   void initState() {
@@ -22,48 +21,52 @@ class _AppUpdateAvailableState extends State<AppUpdateAvailable> {
   }
 
   Future<void> _check() async {
-    final available = await AppUpdateService.isUpdateAvailable();
-    if (!mounted || !available) return;
-    setState(() => _updateAvailable = true);
-    _showBottomSheet();
+    final info = await AppUpdateService.checkUpdate();
+    if (!mounted || !info.isAvailable) return;
+    _showBottomSheet(info);
   }
 
-  void _showBottomSheet() {
+  void _showBottomSheet(UpdateInfo info) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       showModalBottomSheet(
         context: context,
-        isDismissible: false,
-        enableDrag: false,
+        isDismissible: !info.isMandatory,
+        enableDrag: !info.isMandatory,
         backgroundColor: Colors.transparent,
-        builder: (_) => _UpdateBottomSheet(
-          onYes: () {
-            Navigator.pop(context);
-            _doUpdate();
-          },
-          onNo: () => Navigator.pop(context),
+        builder: (_) => PopScope(
+          canPop: !info.isMandatory,
+          child: _UpdateBottomSheet(
+            isMandatory: info.isMandatory,
+            onUpdate: () {
+              if (!info.isMandatory) Navigator.pop(context);
+              _doUpdate(isMandatory: info.isMandatory);
+            },
+            onLater: info.isMandatory ? null : () => Navigator.pop(context),
+          ),
         ),
       );
     });
   }
 
-  Future<void> _doUpdate() async {
-    setState(() => _isUpdating = true);
-    await AppUpdateService.openStore();
-    if (mounted) setState(() => _isUpdating = false);
+  Future<void> _doUpdate({required bool isMandatory}) async {
+    await AppUpdateService.openStore(isMandatory: isMandatory);
   }
 
   @override
-  Widget build(BuildContext context) {
-    return const SizedBox.shrink();
-  }
+  Widget build(BuildContext context) => const SizedBox.shrink();
 }
 
 class _UpdateBottomSheet extends StatelessWidget {
-  const _UpdateBottomSheet({required this.onYes, required this.onNo});
+  const _UpdateBottomSheet({
+    required this.isMandatory,
+    required this.onUpdate,
+    this.onLater,
+  });
 
-  final VoidCallback onYes;
-  final VoidCallback onNo;
+  final bool isMandatory;
+  final VoidCallback onUpdate;
+  final VoidCallback? onLater;
 
   @override
   Widget build(BuildContext context) {
@@ -81,42 +84,55 @@ class _UpdateBottomSheet extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text(
-              "Yangilanish mavjud",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+            Text(
+              isMandatory ? "Yangilanish majburiy" : "Yangilanish mavjud",
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
               textAlign: TextAlign.center,
             ),
             SizedBox(height: AppSpacing.sm),
-
-            const Text(
-              "Ilovaga yangi funksiyalar qo'shildi, yangilashni hohlaysizmi?",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
+            Text(
+              isMandatory
+                  ? "Ilovaning yangi versiyasi chiqdi. Davom etish uchun yangilang."
+                  : "Ilovaga yangi funksiyalar qo'shildi, yangilashni hohlaysizmi?",
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
               textAlign: TextAlign.center,
             ),
             SizedBox(height: AppSpacing.lg),
-            Row(
-              children: [
-                Expanded(
-                  child: AppIconButtonRectangle(
-                    text: "YO'Q",
-                    onPressed: onNo,
-                    backgroundColor: Colors.grey.shade200,
-                    textColor: Colors.black,
-                    height: 55,
-                  ),
+            if (isMandatory)
+              SizedBox(
+                width: double.infinity,
+                child: AppIconButtonRectangle(
+                  text: "YANGILASH",
+                  onPressed: onUpdate,
+                  backgroundColor: const Color(0xFFFFE711),
+                  textColor: Colors.black,
+                  height: 55,
                 ),
-                SizedBox(width: AppSpacing.md),
-                Expanded(
-                  child: AppIconButtonRectangle(
-                    text: "HA",
-                    onPressed: onYes,
-                    backgroundColor: const Color(0xFFFFE711),
-                    textColor: Colors.black,
-                    height: 55,
+              )
+            else
+              Row(
+                children: [
+                  Expanded(
+                    child: AppIconButtonRectangle(
+                      text: "YO'Q",
+                      onPressed: onLater!,
+                      backgroundColor: Colors.grey.shade200,
+                      textColor: Colors.black,
+                      height: 55,
+                    ),
                   ),
-                ),
-              ],
-            ),
+                  SizedBox(width: AppSpacing.md),
+                  Expanded(
+                    child: AppIconButtonRectangle(
+                      text: "HA",
+                      onPressed: onUpdate,
+                      backgroundColor: const Color(0xFFFFE711),
+                      textColor: Colors.black,
+                      height: 55,
+                    ),
+                  ),
+                ],
+              ),
           ],
         ),
       ),

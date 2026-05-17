@@ -1,6 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:opket/core/di/sl.dart';
+import 'package:opket/core/services/socket_service.dart';
+import 'package:opket/feat/report/index.dart';
 import 'package:opket/core/widgets/toast_service.dart';
 import 'package:opket/core/cubit/connectivity_cubit.dart';
 import 'package:opket/feat/auth/presentation/cubit/auth_cubit.dart';
@@ -19,16 +24,27 @@ class DashboardNew extends StatefulWidget {
 
 class _DashboardNewState extends State<DashboardNew> {
   bool _authSheetShown = false;
+  StreamSubscription? _forceLogoutSub;
 
   @override
   void initState() {
     super.initState();
+    _forceLogoutSub = SocketService.instance.onForceLogout.listen((_) {
+      if (!mounted) return;
+      context.read<AuthCubit>().logout();
+    });
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       if (context.read<AuthCubit>().state is UnAuthenticated) {
         _showAuthSheet();
       }
     });
+  }
+
+  @override
+  void dispose() {
+    _forceLogoutSub?.cancel();
+    super.dispose();
   }
 
   void _showAuthSheet() {
@@ -83,6 +99,7 @@ class _DashboardNewState extends State<DashboardNew> {
     print(state);
     if (state is Authenticated) {
       _authSheetShown = false;
+      sl<ReportAppInfo>()(null);
     } else if (state is UnAuthenticated) {
       _showAuthSheet();
     }

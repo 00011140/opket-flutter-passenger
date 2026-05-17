@@ -12,30 +12,34 @@ class _RequestRideButtonState extends State<RequestRideButton> {
   Widget build(BuildContext context) {
     return BlocListener<RideValidationCubit, RideValidationState>(
       listener: _listenRideBookingCubit,
-      child: BlocBuilder<RideBookingCubit, RideBookingState>(
-        builder: (context, state) {
-          final isLoading = state is RequestRideLoading;
-          return AppIconButtonRectangle(
-            size: AppButtonSize.large,
-            onPressed: onCallPress,
-            isLoading: isLoading,
-            text: "Taxi Chaqirish",
-            textColor: Colors.black,
-            backgroundColor: const Color(0xFFFFE711),
-          );
-        },
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          BlocBuilder<RideBookingCubit, RideBookingState>(
+            builder: (context, state) {
+              final isLoading = state is RequestRideLoading;
+              return AppIconButtonRectangle(
+                size: AppButtonSize.large,
+                onPressed: onCallPress,
+                isLoading: isLoading,
+                text: "Taxi Chaqirish",
+                textColor: Colors.black,
+                backgroundColor: const Color(0xFFFFE711),
+              );
+            },
+          ),
+        ],
       ),
     );
   }
 
   void onCallPress() async {
+    // showCancelReasonSheet(context);
     final mapState = context.read<RideMapCubit>().state;
 
     context.read<RideValidationCubit>().validateRequest(
       mapState.isUserLocation,
     );
-
-    // context.read<RideMapCubit>().setUserMarker();
   }
 
   void _listenRideBookingCubit(
@@ -47,10 +51,8 @@ class _RequestRideButtonState extends State<RequestRideButton> {
     } else if (state is NotAuthenticated) {
       showModalBottomSheet(
         useSafeArea: true,
-        isDismissible: false,
         context: context,
         isScrollControlled: true,
-        enableDrag: false,
         backgroundColor: Colors.transparent,
         barrierColor: Colors.black54,
         builder: (_) {
@@ -100,9 +102,14 @@ class _RequestRideButtonState extends State<RequestRideButton> {
     final optionsCubit = context.read<SelectedRideOptionsCubit>();
     final location = mapCubit.state.selectedLocation;
     final options = optionsCubit.state;
+    final useBalance = context.read<ActiveRideCubit>().state.useBalance;
 
     if (location != null) {
-      final params = RequestRideParams(location: location, options: options);
+      final params = RequestRideParams(
+        location: location,
+        options: options,
+        useBalance: useBalance,
+      );
       context.read<RideBookingCubit>().requestRide(params);
       context.read<ActiveRideCubit>().setPickupLocation(location);
     }

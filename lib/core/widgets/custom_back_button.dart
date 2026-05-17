@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:opket/core/constants/app_icons.dart';
 
 class CustomBackButton extends StatelessWidget {
   const CustomBackButton({super.key, this.onPressed});
@@ -17,7 +18,7 @@ class CustomBackButton extends StatelessWidget {
           () {
             Navigator.pop(context);
           },
-      icon: Icon(Icons.chevron_left_rounded, size: 32),
+      icon: Icon(AppIcons.chevronLeft, size: 32),
     );
   }
 }

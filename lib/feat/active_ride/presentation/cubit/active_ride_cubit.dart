@@ -51,6 +51,15 @@ class ActiveRideCubit extends Cubit<ActiveRideState> with WidgetsBindingObserver
       result.fold((l) => {}, (ride) {
         final status = RideStatus.fromString(ride.status);
 
+        if (status == RideStatus.completed) {
+          emit(state.copyWith(
+            driver: ride.driver ?? state.driver,
+            location: ride.driverLocation,
+            status: RideStatus.completed,
+          ));
+          return;
+        }
+
         if (status == RideStatus.idle) {
           // Don't reset a ride that's still in a valid search window —
           // the socket will deliver NoDriversFound when the search actually fails.
@@ -84,6 +93,21 @@ class ActiveRideCubit extends Cubit<ActiveRideState> with WidgetsBindingObserver
     _onEvent(RideAccepted(driver: driver, location: location));
   }
 
+  Future<void> toggleUseBalance({required bool value}) async {
+    emit(state.copyWith(useBalance: value));
+    _saveStateToCache();
+
+    final rideId = state.rideId;
+    if (rideId == null) return; // no active ride yet — local preference only
+
+    try {
+      await repository.setUseBalance(rideId: rideId, useBalance: value);
+    } catch (_) {
+      emit(state.copyWith(useBalance: !value));
+      _saveStateToCache();
+    }
+  }
+
   void setPickupLocation(LatLng pickupLocation) {
     emit(state.copyWith(pickupLocation: pickupLocation));
     // Only persist if a ride is already active — saves before ride creation
@@ -112,6 +136,8 @@ class ActiveRideCubit extends Cubit<ActiveRideState> with WidgetsBindingObserver
         );
         _saveStateToCache();
       case RideAccepted():
+        final rideId = state.rideId;
+        final useBalance = state.useBalance;
         emit(
           state.copyWith(
             driver: event.driver,
@@ -120,6 +146,13 @@ class ActiveRideCubit extends Cubit<ActiveRideState> with WidgetsBindingObserver
           ),
         );
         _saveStateToCache();
+        AudioService().playSound('ride-accepted.mp3');
+        // Re-send useBalance so the driver receives the correct value via
+        // socket even if the passenger toggled it during searching (when
+        // no driver was connected yet to receive the original event).
+        if (useBalance && rideId != null) {
+          repository.setUseBalance(rideId: rideId, useBalance: true);
+        }
       case RouteUpdated():
         emit(state.copyWith(routeUpdate: event.data));
         _saveStateToCache();
@@ -138,9 +171,9 @@ class ActiveRideCubit extends Cubit<ActiveRideState> with WidgetsBindingObserver
         );
         _saveStateToCache();
       case RideCompleted():
-        reset();
-        ActiveRideCacheService.clearRideState();
-        sl<RideMapCubit>().clearMarkers();
+        emit(state.copyWith(status: RideStatus.completed));
+        // State (fare, distance, driver) is intentionally preserved so the
+        // ride summary sheet can display it. Cache cleared after user dismisses.
       case NoDriversFound():
         reset();
         ActiveRideCacheService.clearRideState();
@@ -151,6 +184,22 @@ class ActiveRideCubit extends Cubit<ActiveRideState> with WidgetsBindingObserver
         emit(state.copyWith(location: event.data));
         _saveStateToCache();
     }
+  }
+
+  Future<void> rateRide({
+    required String rideId,
+    required int rating,
+    String? comment,
+  }) async {
+    try {
+      await repository.rateRide(rideId: rideId, rating: rating, comment: comment);
+    } catch (_) {}
+  }
+
+  void onRideSummaryDismissed() {
+    reset();
+    ActiveRideCacheService.clearRideState();
+    sl<RideMapCubit>().clearMarkers();
   }
 
   void _saveStateToCache() {

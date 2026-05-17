@@ -1,3 +1,4 @@
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:opket/core/services/location_service.dart';
@@ -8,7 +9,11 @@ import 'package:opket/feat/active_ride/index.dart';
 import 'package:opket/feat/auth/presentation/cubit/otp_cubit.dart';
 import 'package:opket/feat/auth/presentation/cubit/otp_state.dart';
 import 'package:opket/feat/dashboard/cubit/location_cubit.dart';
+import 'package:opket/feat/dashboard/widgets/turnon_notification_dialog.dart';
 import 'package:opket/feat/ride_booking/presentation/cubit/ride_map_cubit.dart';
+import 'package:opket/feat/ride_booking/presentation/widgets/ride_completed_sheet.dart';
+import 'package:opket/feat/ride_options/domain/entities/ride_option.dart';
+import 'package:opket/feat/ride_options/index.dart';
 
 class RideEffectListener extends StatelessWidget {
   const RideEffectListener({super.key});
@@ -37,15 +42,26 @@ class RideEffectListener extends StatelessWidget {
           listener: (context, state) {
             final mapCubit = context.read<RideMapCubit>();
             _handleRideAccepted(state, mapCubit);
+            if (state.status == RideStatus.accepted) {
+              _showNotificationDialogIfNeeded(context);
+            }
           },
         ),
 
         BlocListener<ActiveRideCubit, ActiveRideState>(
           listenWhen: (prev, curr) => prev.status != curr.status,
-
           listener: (context, state) {
             final mapCubit = context.read<RideMapCubit>();
             _handleRideComepleted(state, mapCubit);
+          },
+        ),
+
+        BlocListener<ActiveRideCubit, ActiveRideState>(
+          listenWhen: (prev, curr) =>
+              prev.status != curr.status &&
+              curr.status == RideStatus.completed,
+          listener: (context, state) {
+            _showRideCompletedSheet(context, state);
           },
         ),
         BlocListener<ActiveRideCubit, ActiveRideState>(
@@ -96,10 +112,68 @@ class RideEffectListener extends StatelessWidget {
     );
   }
 
+  void _showRideCompletedSheet(BuildContext context, ActiveRideState state) {
+    final selectedIds = context.read<SelectedRideOptionsCubit>().state;
+    final optionsState = context.read<RideOptionsCubit>().state;
+    final allOptions =
+        optionsState is RideOptionsSuccess ? optionsState.options : <RideOption>[];
+    final selectedOptions =
+        allOptions.where((o) => selectedIds.contains(o.id)).toList();
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      isDismissible: false,
+      enableDrag: false,
+      backgroundColor: Colors.transparent,
+      builder: (_) => RideCompletedSheet(
+        fare: state.progress.fare,
+        distance: state.progress.distance,
+        driverName: state.driver?.name,
+        selectedOptions: selectedOptions,
+        onSubmit: (rating, comment) async {
+          final rideId = state.rideId;
+          if (rideId != null && context.mounted) {
+            await context.read<ActiveRideCubit>().rateRide(
+              rideId: rideId,
+              rating: rating,
+              comment: comment,
+            );
+          }
+          if (context.mounted) {
+            Navigator.of(context).pop();
+            _resetAfterCompletion(context);
+          }
+        },
+        onClose: () {
+          Navigator.of(context).pop();
+          _resetAfterCompletion(context);
+        },
+      ),
+    );
+  }
+
+  void _resetAfterCompletion(BuildContext context) {
+    context.read<ActiveRideCubit>().onRideSummaryDismissed();
+    context.read<SelectedRideOptionsCubit>().reset();
+  }
+
   Future<void> _verifyReferralLocation() async {
     final position = await LocationService.getCurrentPosition();
     if (position == null) return;
     ReferralLocationService.verifyLocation(position.latitude, position.longitude);
+  }
+
+  void _showNotificationDialogIfNeeded(BuildContext context) {
+    Future.delayed(const Duration(seconds: 2), () async {
+      final allowed = await AwesomeNotifications().isNotificationAllowed();
+      if (allowed) return;
+      if (!context.mounted) return;
+      showDialog(
+        context: context,
+        builder: (_) => const TurnonNotificationDialog(),
+      );
+    });
   }
 
   void _showLocationDialog(BuildContext context) {

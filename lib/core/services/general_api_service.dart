@@ -1,6 +1,5 @@
-import 'package:dio/dio.dart';
-import 'package:opket/core/env.dart';
 import 'package:opket/core/di/sl.dart';
+import 'package:opket/core/env.dart';
 import 'package:opket/core/services/api_client.dart';
 import 'package:opket/core/services/auth_storage.dart';
 import 'package:opket/core/services/user_storage.dart';
@@ -25,20 +24,6 @@ class GeneralApiService {
     } catch (e) {
       return false;
       // rethrow;
-    }
-  }
-
-  Future<void> sendAppInfo(String? version, bool? notificationEnabled) async {
-    final phone = await UserStorage().getPhone();
-    if (phone == null) return;
-
-    try {
-      await api.post("${Env.baseUrl}/user/app-version/$phone", {
-        "notificationEnabled": notificationEnabled,
-        "version": version,
-      });
-    } catch (e) {
-      rethrow;
     }
   }
 

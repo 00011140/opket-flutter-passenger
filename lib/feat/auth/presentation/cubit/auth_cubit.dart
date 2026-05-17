@@ -21,7 +21,18 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
-  void authenticated() {
+  void authenticated() async {
+    final token = await sl<AuthStorage>().getAccessToken();
+    if (token != null) {
+      SocketService.instance.connect(token);
+    }
     emit(Authenticated());
+  }
+
+  Future<void> logout() async {
+    SocketService.instance.disconnect();
+    await sl<AuthStorage>().clear();
+    await UserStorage().deletePhone();
+    emit(UnAuthenticated());
   }
 }
